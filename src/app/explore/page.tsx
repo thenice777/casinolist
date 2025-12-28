@@ -1,17 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import dynamic from "next/dynamic";
+import MapContainer from "@/components/map/MapContainer";
 import { CasinoMapMarker } from "@/types/casino";
-
-// Import map client-side only (uses window)
-const CasinoMap = dynamic(() => import("@/components/map/CasinoMap"), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-full bg-slate-800 animate-pulse flex items-center justify-center">
-      <span className="text-slate-400">Loading map...</span>
-    </div>
-  ),
-});
 
 export const metadata: Metadata = {
   title: "Explore Casinos Worldwide",
@@ -161,7 +151,7 @@ export default function ExplorePage() {
 
       {/* Map Container */}
       <div className="flex-1 relative">
-        <CasinoMap markers={sampleMarkers} />
+        <MapContainer markers={sampleMarkers} />
 
         {/* Overlay UI */}
         <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-sm rounded-lg p-4 border border-slate-700 max-w-xs">
