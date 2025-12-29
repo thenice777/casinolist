@@ -53,8 +53,7 @@ export default async function ExplorePage() {
             Explore Casinos Worldwide
           </h1>
           <p className="text-sm text-slate-400 mb-3">
-            Click on any pin to discover casino details. Gold pins are featured
-            destinations.
+            Click on any pin to discover casino details. Use filters to narrow your search.
           </p>
           <div className="flex items-center gap-4 text-xs text-slate-500">
             <span className="flex items-center gap-1">
@@ -71,7 +70,7 @@ export default async function ExplorePage() {
         {/* Stats */}
         <div className="absolute bottom-4 left-4 bg-slate-900/90 backdrop-blur-sm rounded-lg px-4 py-2 border border-slate-700">
           <span className="text-sm text-slate-400">
-            Showing <span className="text-white font-medium">{markers.length}</span> casino{markers.length !== 1 ? 's' : ''}
+            <span className="text-white font-medium">{markers.length}</span> casino{markers.length !== 1 ? 's' : ''} in database
           </span>
         </div>
       </div>
