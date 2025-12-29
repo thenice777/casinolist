@@ -1,10 +1,11 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import StructuredData from "@/components/seo/StructuredData";
+import ReviewsSection from "@/components/reviews/ReviewsSection";
 import { getLandBasedCasinoBySlug } from "@/lib/casinos";
+import { getLandBasedCasinoReviews, getReviewStats } from "@/lib/reviews";
 import { MapPin, Globe, Phone, Clock, Star, Check, Users } from "lucide-react";
 
 interface Props {
@@ -32,6 +33,12 @@ export default async function CasinoProfilePage({ params }: Props) {
   if (!casino) {
     notFound();
   }
+
+  // Fetch reviews data
+  const [reviews, reviewStats] = await Promise.all([
+    getLandBasedCasinoReviews(casino.id),
+    getReviewStats(casino.id, "land_based"),
+  ]);
 
   const ratingDisplay = (rating: number | string | undefined, label: string) => {
     const numRating = Number(rating);
@@ -302,6 +309,17 @@ export default async function CasinoProfilePage({ params }: Props) {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Reviews Section */}
+        <div className="mt-12">
+          <ReviewsSection
+            reviews={reviews}
+            stats={reviewStats}
+            casinoId={casino.id}
+            casinoType="land_based"
+            casinoName={casino.name}
+          />
         </div>
       </main>
 
