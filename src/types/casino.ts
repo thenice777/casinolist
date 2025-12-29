@@ -84,12 +84,16 @@ export interface LandBasedCasino {
 
   // Ratings
   ratingOverall: number;
-  ratings: RatingDimensions;
+  ratingGames?: number;
+  ratingService?: number;
+  ratingAtmosphere?: number;
+  ratingValue?: number;
+  ratingTrust?: number;
   reviewCount: number;
 
   // Classification
   experienceTiers: ExperienceTier[];
-  verifiedBadges: LandBasedBadge[];
+  verifiedBadges: string[];
 
   // Media
   logoUrl?: string;
@@ -148,7 +152,11 @@ export interface OnlineCasino {
 
   // Ratings
   ratingOverall: number;
-  ratings: RatingDimensions;
+  ratingGames?: number;
+  ratingService?: number;
+  ratingAtmosphere?: number;
+  ratingValue?: number;
+  ratingTrust?: number;
   reviewCount: number;
 
   // Payout Data
@@ -157,7 +165,7 @@ export interface OnlineCasino {
 
   // Classification
   experienceTiers: ExperienceTier[];
-  verifiedBadges: OnlineBadge[];
+  verifiedBadges: string[];
 
   // Media
   logoUrl?: string;

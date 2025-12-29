@@ -33,8 +33,9 @@ export default async function CasinoProfilePage({ params }: Props) {
     notFound();
   }
 
-  const ratingDisplay = (rating: number | undefined, label: string) => {
-    if (!rating) return null;
+  const ratingDisplay = (rating: number | string | undefined, label: string) => {
+    const numRating = Number(rating);
+    if (!numRating || numRating <= 0) return null;
     return (
       <div className="flex items-center justify-between">
         <span className="text-slate-400 text-sm">{label}</span>
@@ -42,14 +43,17 @@ export default async function CasinoProfilePage({ params }: Props) {
           <div className="w-24 h-2 bg-slate-700 rounded-full overflow-hidden">
             <div
               className="h-full bg-emerald-500 rounded-full"
-              style={{ width: `${(rating / 10) * 100}%` }}
+              style={{ width: `${(numRating / 10) * 100}%` }}
             />
           </div>
-          <span className="text-white text-sm w-8">{rating.toFixed(1)}</span>
+          <span className="text-white text-sm w-8">{numRating.toFixed(1)}</span>
         </div>
       </div>
     );
   };
+
+  // Parse rating values
+  const overallRating = Number(casino.ratingOverall) || 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
@@ -118,7 +122,7 @@ export default async function CasinoProfilePage({ params }: Props) {
           {/* Main Content */}
           <div className="md:col-span-2 space-y-8">
             {/* Rating Card */}
-            {casino.ratingOverall > 0 && (
+            {overallRating > 0 && (
               <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold text-white">
@@ -126,20 +130,20 @@ export default async function CasinoProfilePage({ params }: Props) {
                   </h2>
                   <div className="flex items-center gap-2">
                     <span className="text-3xl font-bold text-white">
-                      {casino.ratingOverall.toFixed(1)}
+                      {overallRating.toFixed(1)}
                     </span>
                     <div className="text-amber-400">
-                      {"★".repeat(Math.round(casino.ratingOverall))}
-                      {"☆".repeat(5 - Math.round(casino.ratingOverall))}
+                      {"★".repeat(Math.round(overallRating / 2))}
+                      {"☆".repeat(5 - Math.round(overallRating / 2))}
                     </div>
                   </div>
                 </div>
                 <div className="space-y-3">
-                  {ratingDisplay(casino.ratings?.games, "Games & Selection")}
-                  {ratingDisplay(casino.ratings?.service, "Service")}
-                  {ratingDisplay(casino.ratings?.atmosphere, "Atmosphere")}
-                  {ratingDisplay(casino.ratings?.value, "Value")}
-                  {ratingDisplay(casino.ratings?.trust, "Trust & Safety")}
+                  {ratingDisplay(casino.ratingGames, "Games & Selection")}
+                  {ratingDisplay(casino.ratingService, "Service")}
+                  {ratingDisplay(casino.ratingAtmosphere, "Atmosphere")}
+                  {ratingDisplay(casino.ratingValue, "Value")}
+                  {ratingDisplay(casino.ratingTrust, "Trust & Safety")}
                 </div>
               </div>
             )}
