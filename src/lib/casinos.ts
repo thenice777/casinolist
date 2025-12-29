@@ -316,3 +316,51 @@ export async function searchCasinos(query: string): Promise<SearchResults> {
     destinations: destinationResults.map((row: Record<string, unknown>) => toCamelCase<Destination>(row)),
   };
 }
+
+// Best Of Lists
+export interface BestOfList {
+  category: ExperienceTier;
+  casinos: LandBasedCasino[];
+}
+
+export async function getBestOfLists(): Promise<BestOfList[]> {
+  const tiers: ExperienceTier[] = [
+    "destination",
+    "high_roller_haven",
+    "historic_icon",
+    "poker_paradise",
+    "slots_palace",
+    "local_gem",
+  ];
+
+  const lists = await Promise.all(
+    tiers.map(async (tier) => {
+      const results = await sql`
+        SELECT
+          id, name, slug, city, state, country, country_code,
+          description, short_description, website,
+          ST_Y(coordinates::geometry) as latitude,
+          ST_X(coordinates::geometry) as longitude,
+          is_24_hours, games, amenities,
+          has_hotel, has_restaurant, has_parking,
+          rating_overall, rating_games, rating_service,
+          rating_atmosphere, rating_value, rating_trust,
+          review_count, experience_tiers, verified_badges,
+          logo_url, hero_image_url, images,
+          is_featured, is_verified
+        FROM land_based_casinos
+        WHERE is_active = true
+          AND ${tier} = ANY(experience_tiers)
+        ORDER BY rating_overall DESC NULLS LAST
+        LIMIT 10
+      `;
+
+      return {
+        category: tier,
+        casinos: results.map((row: Record<string, unknown>) => toCamelCase<LandBasedCasino>(row)),
+      };
+    })
+  );
+
+  return lists.filter((list) => list.casinos.length > 0);
+}
