@@ -31,7 +31,7 @@ async function getFilteredOnlineCasinos(filters: {
 
   const results = await sql`
     SELECT
-      id, name, slug, description, short_description, website,
+      id, name, slug, description, short_description, website, affiliate_link,
       licenses, license_countries, restricted_countries,
       welcome_bonus_description, welcome_bonus_amount, welcome_bonus_wagering,
       game_providers, games, has_live_casino, has_sportsbook,

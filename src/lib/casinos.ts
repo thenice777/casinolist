@@ -68,7 +68,7 @@ export async function getOnlineCasinos(options?: {
 
   const results = await sql`
     SELECT
-      id, name, slug, description, short_description, website,
+      id, name, slug, description, short_description, website, affiliate_link,
       licenses, license_countries, restricted_countries,
       welcome_bonus_description, welcome_bonus_amount, welcome_bonus_wagering,
       game_providers, games, has_live_casino, has_sportsbook,
@@ -91,7 +91,7 @@ export async function getOnlineCasinos(options?: {
 export async function getOnlineCasinoBySlug(slug: string) {
   const results = await sql`
     SELECT
-      id, name, slug, description, short_description, website,
+      id, name, slug, description, short_description, website, affiliate_link,
       licenses, license_countries, restricted_countries,
       welcome_bonus_description, welcome_bonus_amount, welcome_bonus_wagering,
       game_providers, games, has_live_casino, has_sportsbook,
@@ -271,7 +271,7 @@ export async function searchCasinos(query: string): Promise<SearchResults> {
     `,
     sql`
       SELECT
-        id, name, slug, description, short_description, website,
+        id, name, slug, description, short_description, website, affiliate_link,
         licenses, license_countries, restricted_countries,
         welcome_bonus_description, welcome_bonus_amount, welcome_bonus_wagering,
         game_providers, games, has_live_casino, has_sportsbook,

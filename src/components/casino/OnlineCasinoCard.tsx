@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Globe, Star, Check, Gift, Shield } from "lucide-react";
 import CompareButton from "@/components/compare/CompareButton";
+import TrackedLink from "@/components/casino/TrackedLink";
 import { OnlineCasino } from "@/types/casino";
 
 interface OnlineCasinoCardProps {
@@ -17,8 +18,8 @@ export default function OnlineCasinoCard({ casino }: OnlineCasinoCardProps) {
         <CompareButton slug={casino.slug} name={casino.name} type="online" />
       </div>
 
-      <Link href={`/online/${casino.slug}`}>
-        <div className="flex flex-col md:flex-row">
+      <div className="flex flex-col md:flex-row">
+        <Link href={`/online/${casino.slug}`} className="flex flex-col md:flex-row flex-1">
           {/* Logo Section */}
           <div className="md:w-48 p-6 flex items-center justify-center bg-slate-800/80">
             {casino.logoUrl ? (
@@ -116,8 +117,23 @@ export default function OnlineCasinoCard({ casino }: OnlineCasinoCardProps) {
               </div>
             )}
           </div>
-        </div>
-      </Link>
+        </Link>
+
+        {/* Visit Casino CTA */}
+        {(casino.affiliateLink || casino.website) && (
+          <div className="hidden md:flex p-4 items-center border-l border-slate-700 bg-slate-800/30">
+            <TrackedLink
+              casinoId={casino.id}
+              casinoType="online"
+              affiliateLink={casino.affiliateLink}
+              websiteUrl={casino.website}
+              casinoName={casino.name}
+              variant="primary"
+              size="md"
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

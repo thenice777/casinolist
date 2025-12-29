@@ -4,9 +4,10 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import StructuredData from "@/components/seo/StructuredData";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
+import TrackedLink from "@/components/casino/TrackedLink";
 import { getOnlineCasinoBySlug } from "@/lib/casinos";
 import { getOnlineCasinoReviews, getReviewStats } from "@/lib/reviews";
-import { Globe, Star, Check, Gift, Shield, CreditCard, Gamepad2, ExternalLink } from "lucide-react";
+import { Globe, Star, Check, Gift, Shield, CreditCard, Gamepad2 } from "lucide-react";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -283,17 +284,17 @@ export default async function OnlineCasinoProfilePage({ params }: Props) {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* CTA */}
-            {casino.website && (
+            {(casino.affiliateLink || casino.website) && (
               <div className="bg-emerald-600 rounded-xl p-6">
-                <a
-                  href={casino.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 bg-white text-emerald-700 font-semibold px-6 py-3 rounded-lg hover:bg-emerald-50 transition-colors"
-                >
-                  Visit Casino
-                  <ExternalLink className="w-4 h-4" />
-                </a>
+                <TrackedLink
+                  casinoId={casino.id}
+                  casinoType="online"
+                  affiliateLink={casino.affiliateLink}
+                  websiteUrl={casino.website}
+                  casinoName={casino.name}
+                  className="w-full bg-white text-emerald-700 hover:bg-emerald-50"
+                  size="lg"
+                />
                 <p className="text-emerald-100 text-xs text-center mt-3">
                   18+ | T&Cs Apply | Gamble Responsibly
                 </p>
