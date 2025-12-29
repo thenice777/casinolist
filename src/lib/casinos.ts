@@ -364,3 +364,63 @@ export async function getBestOfLists(): Promise<BestOfList[]> {
 
   return lists.filter((list) => list.casinos.length > 0);
 }
+
+// Bonus-related queries for bonus comparison page
+export interface BonusFilters {
+  bonusType?: "welcome" | "no_deposit" | "free_spins" | "all";
+  maxWagering?: number;
+  minRating?: number;
+  hasLiveCasino?: boolean;
+  license?: string;
+}
+
+export async function getOnlineCasinosWithBonuses(filters: BonusFilters = {}) {
+  const {
+    bonusType = "all",
+    maxWagering,
+    minRating = 0,
+    hasLiveCasino,
+    license,
+  } = filters;
+
+  const results = await sql`
+    SELECT
+      id, name, slug, short_description, website, affiliate_link,
+      licenses, restricted_countries,
+      welcome_bonus_description, welcome_bonus_amount, welcome_bonus_wagering,
+      has_live_casino, has_sportsbook,
+      payment_methods, currencies,
+      rating_overall, rating_trust,
+      logo_url,
+      is_featured, is_verified
+    FROM online_casinos
+    WHERE is_active = true
+      AND welcome_bonus_description IS NOT NULL
+      AND welcome_bonus_description != ''
+      AND (${minRating} = 0 OR COALESCE(rating_overall, 0) >= ${minRating})
+      AND (${maxWagering ?? 999} = 999 OR COALESCE(welcome_bonus_wagering, 0) <= ${maxWagering ?? 999})
+      AND (${hasLiveCasino ?? false} = false OR has_live_casino = true)
+      AND (${license || ''} = '' OR ${license || ''} = ANY(licenses))
+    ORDER BY
+      is_featured DESC,
+      rating_overall DESC NULLS LAST,
+      welcome_bonus_wagering ASC NULLS LAST
+    LIMIT 100
+  `;
+
+  return results.map((row: Record<string, unknown>) => toCamelCase<OnlineCasino>(row));
+}
+
+export async function getBonusStats() {
+  const results = await sql`
+    SELECT
+      COUNT(*) FILTER (WHERE welcome_bonus_description IS NOT NULL AND welcome_bonus_description != '') as total_with_bonus,
+      COUNT(*) FILTER (WHERE welcome_bonus_wagering <= 35) as low_wagering_count,
+      AVG(welcome_bonus_wagering) FILTER (WHERE welcome_bonus_wagering IS NOT NULL) as avg_wagering,
+      COUNT(DISTINCT unnest) as unique_licenses
+    FROM online_casinos, LATERAL unnest(licenses)
+    WHERE is_active = true
+  `;
+
+  return results[0] || { total_with_bonus: 0, low_wagering_count: 0, avg_wagering: 0 };
+}

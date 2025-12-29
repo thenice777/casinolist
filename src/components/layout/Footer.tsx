@@ -7,6 +7,7 @@ const footerLinks = {
     { href: "/explore", label: "World Map" },
     { href: "/land-based-casinos", label: "Land-Based Casinos" },
     { href: "/online-casinos", label: "Online Casinos" },
+    { href: "/bonuses", label: "Casino Bonuses" },
     { href: "/destinations", label: "Destinations" },
     { href: "/best-of", label: "Best Of Lists" },
     { href: "/search", label: "Search" },
