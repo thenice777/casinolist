@@ -11,10 +11,10 @@ const footerLinks = {
     { href: "/search", label: "Search" },
   ],
   resources: [
-    { href: "#", label: "How We Rate" },
-    { href: "#", label: "Responsible Gambling" },
-    { href: "#", label: "Casino Glossary" },
-    { href: "#", label: "About Us" },
+    { href: "/how-we-rate", label: "How We Rate" },
+    { href: "/responsible-gambling", label: "Responsible Gambling" },
+    { href: "/glossary", label: "Casino Glossary" },
+    { href: "/about", label: "About Us" },
   ],
   legal: [
     { href: "#", label: "Terms of Service" },
