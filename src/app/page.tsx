@@ -1,5 +1,7 @@
 import Link from "next/link";
 import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import NewsletterSignup from "@/components/ui/NewsletterSignup";
 import { MapPin, Globe, Star, Users, Building2, ArrowRight } from "lucide-react";
 import { getCasinoStats, getLandBasedCasinos, getOnlineCasinos, getDestinations } from "@/lib/casinos";
 
@@ -275,6 +277,33 @@ export default async function Home() {
           </section>
         )}
 
+        {/* Newsletter Section */}
+        <section className="mt-24 grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <h2 className="text-3xl font-bold text-white mb-4">
+              Stay in the Know
+            </h2>
+            <p className="text-slate-300 mb-4">
+              Get exclusive casino insights, new openings, and expert tips delivered to your inbox. Join thousands of discerning players.
+            </p>
+            <ul className="text-slate-400 text-sm space-y-2">
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                New casino reviews and ratings
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                Destination guides and travel tips
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                Exclusive VIP program insights
+              </li>
+            </ul>
+          </div>
+          <NewsletterSignup />
+        </section>
+
         {/* CTA Section */}
         <div className="mt-24 text-center bg-gradient-to-r from-emerald-900/50 to-slate-800/50 rounded-2xl p-12 border border-emerald-700/30">
           <h2 className="text-3xl font-bold text-white mb-4">
@@ -294,19 +323,7 @@ export default async function Home() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-700 mt-20">
-        <div className="mx-auto max-w-7xl px-6 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-slate-500 text-sm">
-              © {new Date().getFullYear()} CasinoList.io. Know the House.
-            </p>
-            <p className="text-slate-500 text-sm">
-              Gamble responsibly. 18+ only.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

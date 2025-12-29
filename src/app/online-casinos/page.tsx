@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Metadata } from "next";
 import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 import { getOnlineCasinos } from "@/lib/casinos";
 import { Globe, Star, Check, Gift, Shield } from "lucide-react";
 
@@ -144,19 +145,7 @@ export default async function OnlineCasinosPage() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-700 mt-12">
-        <div className="mx-auto max-w-7xl px-6 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-slate-500 text-sm">
-              © {new Date().getFullYear()} CasinoList.io. Know the House.
-            </p>
-            <p className="text-slate-500 text-sm">
-              Gamble responsibly. 18+ only.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
