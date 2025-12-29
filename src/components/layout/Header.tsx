@@ -6,8 +6,9 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/explore", label: "Explore Map" },
+  { href: "/destinations", label: "Destinations" },
   { href: "/online-casinos", label: "Online Casinos" },
-  { href: "/land-based-casinos", label: "Land-Based Casinos" },
+  { href: "/land-based-casinos", label: "Land-Based" },
 ];
 
 export default function Header() {

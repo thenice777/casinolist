@@ -1,5 +1,5 @@
 import { sql, toCamelCase } from "./db";
-import { LandBasedCasino, OnlineCasino, CasinoMapMarker, ExperienceTier } from "@/types/casino";
+import { LandBasedCasino, OnlineCasino, CasinoMapMarker, ExperienceTier, Destination } from "@/types/casino";
 
 // Land-based casino queries
 export async function getLandBasedCasinos(options?: {
@@ -155,4 +155,77 @@ export async function getCasinoStats() {
     onlineCount: parseInt(results[0].online_count as string),
     countries: parseInt(results[0].countries as string),
   };
+}
+
+// Destination queries
+export async function getDestinations(options?: {
+  featured?: boolean;
+  limit?: number;
+  type?: 'city' | 'region' | 'country';
+}) {
+  const { featured, limit = 50, type } = options || {};
+
+  const results = await sql`
+    SELECT
+      id, name, slug, type, city, state, country, country_code,
+      description, short_description, casino_overview, practical_info,
+      ST_Y(coordinates::geometry) as latitude,
+      ST_X(coordinates::geometry) as longitude,
+      casino_count, hero_image_url, images,
+      is_featured, meta_title, meta_description
+    FROM destinations
+    WHERE is_active = true
+      AND (${featured ?? false} = false OR is_featured = true)
+      AND (${type || ''} = '' OR type = ${type || ''})
+    ORDER BY is_featured DESC, casino_count DESC
+    LIMIT ${limit}
+  `;
+
+  return results.map((row: Record<string, unknown>) => toCamelCase<Destination>(row));
+}
+
+export async function getDestinationBySlug(slug: string) {
+  const results = await sql`
+    SELECT
+      id, name, slug, type, city, state, country, country_code,
+      description, short_description, casino_overview, practical_info,
+      ST_Y(coordinates::geometry) as latitude,
+      ST_X(coordinates::geometry) as longitude,
+      casino_count, hero_image_url, images,
+      is_featured, meta_title, meta_description,
+      created_at, updated_at
+    FROM destinations
+    WHERE slug = ${slug} AND is_active = true
+  `;
+
+  if (results.length === 0) return null;
+  return toCamelCase<Destination>(results[0] as Record<string, unknown>);
+}
+
+export async function getCasinosByDestination(destination: Destination) {
+  // Get casinos in this destination based on type
+  if (destination.type === 'country') {
+    return getLandBasedCasinos({ country: destination.country });
+  } else if (destination.type === 'city' && destination.city) {
+    const results = await sql`
+      SELECT
+        id, name, slug, city, state, country, country_code,
+        description, short_description, website,
+        ST_Y(coordinates::geometry) as latitude,
+        ST_X(coordinates::geometry) as longitude,
+        is_24_hours, games, amenities,
+        has_hotel, has_restaurant, has_parking,
+        rating_overall, rating_games, rating_service,
+        rating_atmosphere, rating_value, rating_trust,
+        review_count, experience_tiers, verified_badges,
+        logo_url, hero_image_url, images,
+        is_featured, is_verified
+      FROM land_based_casinos
+      WHERE is_active = true AND city = ${destination.city}
+      ORDER BY rating_overall DESC NULLS LAST
+      LIMIT 50
+    `;
+    return results.map((row: Record<string, unknown>) => toCamelCase<LandBasedCasino>(row));
+  }
+  return [];
 }
