@@ -1,0 +1,367 @@
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import Header from "@/components/layout/Header";
+import { getOnlineCasinoBySlug } from "@/lib/casinos";
+import { Globe, Star, Check, Gift, Shield, CreditCard, Gamepad2, ExternalLink } from "lucide-react";
+
+interface Props {
+  params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const casino = await getOnlineCasinoBySlug(slug);
+
+  if (!casino) {
+    return { title: "Casino Not Found" };
+  }
+
+  return {
+    title: `${casino.name} | Online Casino Review`,
+    description: casino.shortDescription || casino.description?.slice(0, 160),
+  };
+}
+
+export default async function OnlineCasinoProfilePage({ params }: Props) {
+  const { slug } = await params;
+  const casino = await getOnlineCasinoBySlug(slug);
+
+  if (!casino) {
+    notFound();
+  }
+
+  const ratingDisplay = (rating: number | undefined, label: string) => {
+    if (!rating) return null;
+    return (
+      <div className="flex items-center justify-between">
+        <span className="text-slate-400 text-sm">{label}</span>
+        <div className="flex items-center gap-2">
+          <div className="w-24 h-2 bg-slate-700 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-emerald-500 rounded-full"
+              style={{ width: `${(rating / 10) * 100}%` }}
+            />
+          </div>
+          <span className="text-white text-sm w-8">{rating.toFixed(1)}</span>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
+      <Header />
+
+      {/* Hero */}
+      <div className="relative h-64 md:h-72 bg-slate-800">
+        {casino.heroImageUrl ? (
+          <img
+            src={casino.heroImageUrl}
+            alt={casino.name}
+            className="w-full h-full object-cover opacity-50"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-emerald-900/30 to-slate-900" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
+
+        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-start gap-4">
+              {casino.logoUrl ? (
+                <img
+                  src={casino.logoUrl}
+                  alt={`${casino.name} logo`}
+                  className="w-16 h-16 rounded-lg bg-white p-2"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center">
+                  <Globe className="w-8 h-8 text-white/80" />
+                </div>
+              )}
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  {casino.isFeatured && (
+                    <span className="bg-amber-500/20 text-amber-400 text-xs px-2 py-0.5 rounded">
+                      Featured
+                    </span>
+                  )}
+                  {casino.isVerified && (
+                    <span className="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded flex items-center gap-1">
+                      <Check className="w-3 h-3" /> Verified
+                    </span>
+                  )}
+                </div>
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                  {casino.name}
+                </h1>
+                {casino.foundedYear && (
+                  <p className="text-slate-400 text-sm">
+                    Established {casino.foundedYear}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        <div className="grid md:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="md:col-span-2 space-y-8">
+            {/* Welcome Bonus */}
+            {casino.welcomeBonusDescription && (
+              <div className="bg-gradient-to-br from-emerald-900/30 to-slate-800 rounded-xl p-6 border border-emerald-500/30">
+                <div className="flex items-center gap-3 mb-4">
+                  <Gift className="w-6 h-6 text-emerald-400" />
+                  <h2 className="text-xl font-semibold text-white">
+                    Welcome Bonus
+                  </h2>
+                </div>
+                <p className="text-2xl font-bold text-emerald-400 mb-2">
+                  {casino.welcomeBonusDescription}
+                </p>
+                {casino.welcomeBonusWagering && (
+                  <p className="text-slate-400 text-sm">
+                    Wagering requirement: {casino.welcomeBonusWagering}x
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Rating Card */}
+            {casino.ratingOverall > 0 && (
+              <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-white">
+                    CasinoList Rating
+                  </h2>
+                  <div className="flex items-center gap-2">
+                    <Star className="w-6 h-6 text-amber-400 fill-amber-400" />
+                    <span className="text-3xl font-bold text-white">
+                      {casino.ratingOverall.toFixed(1)}
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {ratingDisplay(casino.ratings?.games, "Games & Selection")}
+                  {ratingDisplay(casino.ratings?.service, "Customer Service")}
+                  {ratingDisplay(casino.ratings?.atmosphere, "User Experience")}
+                  {ratingDisplay(casino.ratings?.value, "Value & Bonuses")}
+                  {ratingDisplay(casino.ratings?.trust, "Trust & Safety")}
+                </div>
+              </div>
+            )}
+
+            {/* Description */}
+            <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+              <h2 className="text-xl font-semibold text-white mb-4">About</h2>
+              <p className="text-slate-300 leading-relaxed">
+                {casino.description || casino.shortDescription}
+              </p>
+            </div>
+
+            {/* Games */}
+            {casino.games && casino.games.length > 0 && (
+              <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+                <div className="flex items-center gap-3 mb-4">
+                  <Gamepad2 className="w-5 h-5 text-emerald-400" />
+                  <h2 className="text-xl font-semibold text-white">
+                    Games Available
+                  </h2>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {casino.games.map((game) => (
+                    <span
+                      key={game}
+                      className="bg-slate-700 text-slate-300 px-3 py-1 rounded-full text-sm capitalize"
+                    >
+                      {game.replace(/_/g, " ")}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Game Providers */}
+            {casino.gameProviders && casino.gameProviders.length > 0 && (
+              <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+                <h2 className="text-xl font-semibold text-white mb-4">
+                  Game Providers
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {casino.gameProviders.map((provider) => (
+                    <span
+                      key={provider}
+                      className="bg-slate-700 text-slate-300 px-3 py-1 rounded-full text-sm"
+                    >
+                      {provider}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Payment Methods */}
+            {casino.paymentMethods && casino.paymentMethods.length > 0 && (
+              <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+                <div className="flex items-center gap-3 mb-4">
+                  <CreditCard className="w-5 h-5 text-emerald-400" />
+                  <h2 className="text-xl font-semibold text-white">
+                    Payment Methods
+                  </h2>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {casino.paymentMethods.map((method) => (
+                    <span
+                      key={method}
+                      className="bg-slate-700 text-slate-300 px-3 py-1 rounded-full text-sm capitalize"
+                    >
+                      {method.replace(/_/g, " ")}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* CTA */}
+            {casino.website && (
+              <div className="bg-emerald-600 rounded-xl p-6">
+                <a
+                  href={casino.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 bg-white text-emerald-700 font-semibold px-6 py-3 rounded-lg hover:bg-emerald-50 transition-colors"
+                >
+                  Visit Casino
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+                <p className="text-emerald-100 text-xs text-center mt-3">
+                  18+ | T&Cs Apply | Gamble Responsibly
+                </p>
+              </div>
+            )}
+
+            {/* Quick Info */}
+            <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Quick Info
+              </h3>
+              <div className="space-y-4">
+                {casino.hasLiveCasino && (
+                  <div className="flex items-center gap-3 text-slate-300">
+                    <Check className="w-5 h-5 text-emerald-400" />
+                    <span>Live Casino Available</span>
+                  </div>
+                )}
+                {casino.hasSportsbook && (
+                  <div className="flex items-center gap-3 text-slate-300">
+                    <Check className="w-5 h-5 text-emerald-400" />
+                    <span>Sportsbook Available</span>
+                  </div>
+                )}
+                {casino.currencies && casino.currencies.length > 0 && (
+                  <div className="text-slate-300">
+                    <span className="text-slate-400 text-sm block mb-1">Currencies</span>
+                    <span>{casino.currencies.join(", ")}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Licenses */}
+            {casino.licenses && casino.licenses.length > 0 && (
+              <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+                <div className="flex items-center gap-2 mb-4">
+                  <Shield className="w-5 h-5 text-emerald-400" />
+                  <h3 className="text-lg font-semibold text-white">Licenses</h3>
+                </div>
+                <div className="space-y-2">
+                  {casino.licenses.map((license) => (
+                    <div
+                      key={license}
+                      className="flex items-center gap-2 text-slate-300 text-sm"
+                    >
+                      <Check className="w-4 h-4 text-emerald-400" />
+                      <span>{license}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Badges */}
+            {casino.verifiedBadges && casino.verifiedBadges.length > 0 && (
+              <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+                <h3 className="text-lg font-semibold text-white mb-4">
+                  Verified Badges
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {casino.verifiedBadges.map((badge) => (
+                    <span
+                      key={badge}
+                      className="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-sm flex items-center gap-1"
+                    >
+                      <Check className="w-3 h-3" />
+                      {badge.replace(/_/g, " ")}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Experience Tiers */}
+            {casino.experienceTiers && casino.experienceTiers.length > 0 && (
+              <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+                <h3 className="text-lg font-semibold text-white mb-4">
+                  Experience Type
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {casino.experienceTiers.map((tier) => (
+                    <span
+                      key={tier}
+                      className="bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full text-sm capitalize"
+                    >
+                      {tier.replace(/_/g, " ")}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Restricted Countries */}
+            {casino.restrictedCountries && casino.restrictedCountries.length > 0 && (
+              <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+                <h3 className="text-lg font-semibold text-white mb-4">
+                  Restricted Countries
+                </h3>
+                <p className="text-slate-400 text-sm">
+                  {casino.restrictedCountries.join(", ")}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-700 mt-12">
+        <div className="mx-auto max-w-7xl px-6 py-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-slate-500 text-sm">
+              © {new Date().getFullYear()} CasinoList.io. Know the House.
+            </p>
+            <p className="text-slate-500 text-sm">
+              Gamble responsibly. 18+ only.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
