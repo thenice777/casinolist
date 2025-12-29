@@ -17,10 +17,10 @@ const footerLinks = {
     { href: "/about", label: "About Us" },
   ],
   legal: [
-    { href: "#", label: "Terms of Service" },
-    { href: "#", label: "Privacy Policy" },
-    { href: "#", label: "Cookie Policy" },
-    { href: "#", label: "Affiliate Disclosure" },
+    { href: "/terms", label: "Terms of Service" },
+    { href: "/privacy", label: "Privacy Policy" },
+    { href: "/cookies", label: "Cookie Policy" },
+    { href: "/about#affiliate", label: "Affiliate Disclosure" },
   ],
 };
 
