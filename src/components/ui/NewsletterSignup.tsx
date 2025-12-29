@@ -27,20 +27,25 @@ export default function NewsletterSignup({
 
     setStatus("loading");
 
-    // Simulate API call - in production, this would be an actual endpoint
-    // For now, we just simulate success after a short delay
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
 
-      // In production, you'd call an API here:
-      // const response = await fetch('/api/newsletter', {
-      //   method: 'POST',
-      //   body: JSON.stringify({ email }),
-      // });
+      const data = await response.json();
 
-      setStatus("success");
-      setMessage("Thanks for subscribing! Check your inbox soon.");
-      setEmail("");
+      if (response.ok) {
+        setStatus("success");
+        setMessage(data.message || "Thanks for subscribing!");
+        setEmail("");
+      } else {
+        setStatus("error");
+        setMessage(data.error || "Something went wrong. Please try again.");
+      }
     } catch {
       setStatus("error");
       setMessage("Something went wrong. Please try again.");
