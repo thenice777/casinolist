@@ -15,6 +15,7 @@ const footerLinks = {
     { href: "/responsible-gambling", label: "Responsible Gambling" },
     { href: "/glossary", label: "Casino Glossary" },
     { href: "/about", label: "About Us" },
+    { href: "/contact", label: "Contact Us" },
   ],
   legal: [
     { href: "/terms", label: "Terms of Service" },

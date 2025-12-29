@@ -15,27 +15,57 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://casinolist.io"),
   title: {
-    default: "CasinoList.io - Find Online & Land-Based Casinos Worldwide",
+    default: "CasinoList.io - Know the House | Casino Discovery Worldwide",
     template: "%s | CasinoList.io",
   },
   description:
-    "Discover the best online casinos and land-based casinos worldwide. Compare bonuses, read reviews, and find casinos near you.",
+    "Discover the best online casinos and land-based casinos worldwide. Compare bonuses, read expert reviews, and find verified casinos near you. Know the House.",
   keywords: [
     "online casinos",
     "land-based casinos",
     "casino reviews",
     "casino bonuses",
     "gambling",
+    "casino ratings",
+    "Las Vegas casinos",
+    "Macau casinos",
+    "casino comparison",
   ],
+  authors: [{ name: "CasinoList.io" }],
+  creator: "CasinoList.io",
+  publisher: "CasinoList.io",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
-    title: "CasinoList.io - Find Online & Land-Based Casinos Worldwide",
+    title: "CasinoList.io - Know the House | Casino Discovery Worldwide",
     description:
-      "Discover the best online casinos and land-based casinos worldwide.",
+      "Discover the best online casinos and land-based casinos worldwide. Compare bonuses, read expert reviews, and find verified casinos.",
     url: "https://casinolist.io",
     siteName: "CasinoList.io",
+    locale: "en_US",
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "CasinoList.io - Know the House",
+    description:
+      "Discover the best online casinos and land-based casinos worldwide. Compare bonuses and read expert reviews.",
+  },
+  verification: {
+    google: "your-google-verification-code",
+  },
+  category: "gambling",
 };
 
 export default function RootLayout({

@@ -20,9 +20,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: "Casino Not Found" };
   }
 
+  const description = casino.shortDescription || casino.description?.slice(0, 160) || `Discover ${casino.name} in ${casino.city}, ${casino.country}. Expert ratings, games, amenities, and insider details.`;
+  const rating = Number(casino.ratingOverall);
+
   return {
-    title: casino.name,
-    description: casino.shortDescription || casino.description?.slice(0, 160),
+    title: `${casino.name} - ${casino.city}, ${casino.country}`,
+    description,
+    openGraph: {
+      title: `${casino.name} | CasinoList.io`,
+      description,
+      url: `https://casinolist.io/casino/${casino.slug}`,
+      siteName: "CasinoList.io",
+      type: "website",
+      images: casino.heroImageUrl ? [
+        {
+          url: casino.heroImageUrl,
+          width: 1200,
+          height: 630,
+          alt: casino.name,
+        },
+      ] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${casino.name} | CasinoList.io`,
+      description: rating > 0 ? `${description} Rating: ${rating.toFixed(1)}/10` : description,
+      images: casino.heroImageUrl ? [casino.heroImageUrl] : undefined,
+    },
   };
 }
 

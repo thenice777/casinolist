@@ -20,9 +20,40 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: "Casino Not Found" };
   }
 
+  const description = casino.shortDescription || casino.description?.slice(0, 160) || `${casino.name} online casino review. Expert ratings, bonuses, games, and trusted information.`;
+  const rating = Number(casino.ratingOverall);
+
   return {
-    title: `${casino.name} | Online Casino Review`,
-    description: casino.shortDescription || casino.description?.slice(0, 160),
+    title: `${casino.name} Review - Online Casino`,
+    description,
+    openGraph: {
+      title: `${casino.name} Review | CasinoList.io`,
+      description: casino.welcomeBonusDescription ? `${description} Welcome Bonus: ${casino.welcomeBonusDescription}` : description,
+      url: `https://casinolist.io/online/${casino.slug}`,
+      siteName: "CasinoList.io",
+      type: "website",
+      images: casino.heroImageUrl ? [
+        {
+          url: casino.heroImageUrl,
+          width: 1200,
+          height: 630,
+          alt: casino.name,
+        },
+      ] : casino.logoUrl ? [
+        {
+          url: casino.logoUrl,
+          width: 200,
+          height: 200,
+          alt: casino.name,
+        },
+      ] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${casino.name} Review | CasinoList.io`,
+      description: rating > 0 ? `${description} Rating: ${rating.toFixed(1)}/10` : description,
+      images: casino.heroImageUrl ? [casino.heroImageUrl] : undefined,
+    },
   };
 }
 
