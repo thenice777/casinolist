@@ -43,40 +43,155 @@ const tipsList = [
   },
 ];
 
-const helpResources = [
-  {
-    name: "National Council on Problem Gambling",
-    phone: "1-800-522-4700",
-    website: "https://www.ncpgambling.org",
-    description: "24/7 confidential helpline for problem gamblers and their families.",
-    region: "USA",
-  },
-  {
-    name: "Gamblers Anonymous",
-    website: "https://www.gamblersanonymous.org",
-    description: "Fellowship of people who share experience and help each other recover.",
-    region: "Worldwide",
-  },
-  {
-    name: "BeGambleAware",
-    phone: "0808 8020 133",
-    website: "https://www.begambleaware.org",
-    description: "Free, confidential help for anyone affected by gambling problems.",
-    region: "UK",
-  },
-  {
-    name: "GamCare",
-    phone: "0808 8020 133",
-    website: "https://www.gamcare.org.uk",
-    description: "Support, information, and advice for gambling problems.",
-    region: "UK",
-  },
-  {
-    name: "Gambling Therapy",
-    website: "https://www.gamblingtherapy.org",
-    description: "Free online support for anyone affected by problem gambling.",
-    region: "Worldwide",
-  },
+const helpResourcesByRegion: Record<string, Array<{
+  name: string;
+  phone?: string;
+  website: string;
+  description: string;
+  emergency?: boolean;
+}>> = {
+  "Worldwide": [
+    {
+      name: "Gambling Therapy",
+      website: "https://www.gamblingtherapy.org",
+      description: "Free online support for anyone affected by problem gambling. Available in multiple languages.",
+    },
+    {
+      name: "Gamblers Anonymous",
+      website: "https://www.gamblersanonymous.org",
+      description: "Fellowship of people who share experience and help each other recover.",
+    },
+  ],
+  "United States": [
+    {
+      name: "National Council on Problem Gambling",
+      phone: "1-800-522-4700",
+      website: "https://www.ncpgambling.org",
+      description: "24/7 confidential helpline for problem gamblers and their families.",
+      emergency: true,
+    },
+    {
+      name: "National Problem Gambling Helpline",
+      phone: "1-800-522-4700",
+      website: "https://www.ncpgambling.org/help-treatment/chat/",
+      description: "Call, text, or chat. Available 24/7, 365 days a year.",
+      emergency: true,
+    },
+  ],
+  "United Kingdom": [
+    {
+      name: "GamCare",
+      phone: "0808 8020 133",
+      website: "https://www.gamcare.org.uk",
+      description: "Support, information, and advice for gambling problems. Free, confidential, 24/7.",
+      emergency: true,
+    },
+    {
+      name: "BeGambleAware",
+      phone: "0808 8020 133",
+      website: "https://www.begambleaware.org",
+      description: "Free, confidential help for anyone affected by gambling problems.",
+    },
+    {
+      name: "GAMSTOP",
+      website: "https://www.gamstop.co.uk",
+      description: "Free self-exclusion scheme to restrict your online gambling across all licensed UK operators.",
+    },
+  ],
+  "Canada": [
+    {
+      name: "Responsible Gambling Council",
+      phone: "1-866-531-2600",
+      website: "https://www.responsiblegambling.org",
+      description: "Information and resources for safer gambling.",
+    },
+    {
+      name: "ConnexOntario",
+      phone: "1-866-531-2600",
+      website: "https://www.connexontario.ca",
+      description: "Ontario's drug, alcohol, problem gambling helpline.",
+      emergency: true,
+    },
+  ],
+  "Australia": [
+    {
+      name: "Gambling Help Online",
+      phone: "1800 858 858",
+      website: "https://www.gamblinghelponline.org.au",
+      description: "Free 24/7 support including counseling and self-help.",
+      emergency: true,
+    },
+    {
+      name: "Lifeline Australia",
+      phone: "13 11 14",
+      website: "https://www.lifeline.org.au",
+      description: "Crisis support and suicide prevention services.",
+      emergency: true,
+    },
+  ],
+  "New Zealand": [
+    {
+      name: "Gambling Helpline NZ",
+      phone: "0800 654 655",
+      website: "https://www.gamblinghelpline.co.nz",
+      description: "Free 24/7 support for problem gambling.",
+      emergency: true,
+    },
+  ],
+  "Germany": [
+    {
+      name: "BZgA (Bundeszentrale für gesundheitliche Aufklärung)",
+      phone: "0800 1 37 27 00",
+      website: "https://www.bzga.de",
+      description: "Federal centre for health education with gambling support resources.",
+    },
+  ],
+  "Ireland": [
+    {
+      name: "Gamblers Anonymous Ireland",
+      phone: "01 872 1133",
+      website: "https://www.gamblersanonymous.ie",
+      description: "Fellowship and support groups across Ireland.",
+    },
+    {
+      name: "Problem Gambling Ireland",
+      website: "https://www.problemgambling.ie",
+      description: "Information, resources, and referrals for gambling problems.",
+    },
+  ],
+  "Sweden": [
+    {
+      name: "Stödlinjen",
+      phone: "020-819 100",
+      website: "https://www.stodlinjen.se",
+      description: "National helpline for gambling problems in Sweden.",
+      emergency: true,
+    },
+  ],
+  "Netherlands": [
+    {
+      name: "AGOG",
+      phone: "0900 217 27 21",
+      website: "https://www.agog.nl",
+      description: "Support for problem gambling in the Netherlands.",
+    },
+    {
+      name: "Loket Kansspel",
+      website: "https://www.loketkansspel.nl",
+      description: "Information about responsible gambling and self-exclusion.",
+    },
+  ],
+};
+
+const selfAssessmentQuestions = [
+  "Do you spend more time or money gambling than you intended?",
+  "Have you tried to cut back on gambling but found it difficult?",
+  "Do you feel restless or irritable when trying to stop gambling?",
+  "Do you gamble to escape problems or relieve negative feelings?",
+  "After losing money gambling, do you often return to try to win it back?",
+  "Have you lied to family members or others about your gambling?",
+  "Have you risked or lost a significant relationship, job, or opportunity because of gambling?",
+  "Do you rely on others to provide money to relieve financial situations caused by gambling?",
 ];
 
 export default function ResponsibleGamblingPage() {
@@ -188,51 +303,97 @@ export default function ResponsibleGamblingPage() {
           </p>
         </div>
 
-        {/* Help Resources */}
+        {/* Self-Assessment */}
+        <h2 className="text-2xl font-bold text-white mb-6">
+          Self-Assessment
+        </h2>
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-6 mb-12">
+          <p className="text-slate-300 mb-4">
+            The following questions are based on the DSM-5 criteria for gambling disorder.
+            If you answer &quot;yes&quot; to 4 or more questions, consider seeking professional help.
+          </p>
+          <div className="space-y-3">
+            {selfAssessmentQuestions.map((question, index) => (
+              <div key={index} className="flex items-start gap-3 p-3 bg-slate-700/30 rounded-lg">
+                <span className="text-emerald-400 font-bold text-sm mt-0.5">{index + 1}.</span>
+                <span className="text-slate-300 text-sm">{question}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 p-4 bg-amber-900/20 border border-amber-700/30 rounded-lg">
+            <p className="text-amber-200 text-sm">
+              <strong>Important:</strong> This is not a diagnostic tool. If you&apos;re concerned about
+              your gambling habits, please speak with a healthcare professional or contact one of
+              the helplines listed below.
+            </p>
+          </div>
+        </div>
+
+        {/* Help Resources by Region */}
         <h2 className="text-2xl font-bold text-white mb-6">
           Get Help Now
         </h2>
-        <div className="space-y-4 mb-12">
-          {helpResources.map((resource) => (
-            <div
-              key={resource.name}
-              className="bg-slate-800/50 rounded-xl border border-slate-700 p-6"
-            >
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-lg font-semibold text-white">
-                      {resource.name}
-                    </h3>
-                    <span className="bg-slate-700 text-slate-300 text-xs px-2 py-0.5 rounded">
-                      {resource.region}
-                    </span>
+        <p className="text-slate-400 mb-6">
+          Find support in your region. All helplines are confidential.
+        </p>
+
+        <div className="space-y-8 mb-12">
+          {Object.entries(helpResourcesByRegion).map(([region, resources]) => (
+            <div key={region}>
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <Globe className="w-5 h-5 text-emerald-400" />
+                {region}
+              </h3>
+              <div className="space-y-3">
+                {resources.map((resource) => (
+                  <div
+                    key={resource.name}
+                    className={`bg-slate-800/50 rounded-xl border p-5 ${
+                      resource.emergency
+                        ? "border-emerald-500/50"
+                        : "border-slate-700"
+                    }`}
+                  >
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-semibold text-white">
+                            {resource.name}
+                          </h4>
+                          {resource.emergency && (
+                            <span className="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded">
+                              24/7
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-slate-400 text-sm">
+                          {resource.description}
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-3">
+                        {resource.phone && (
+                          <a
+                            href={`tel:${resource.phone.replace(/[^0-9+]/g, "")}`}
+                            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                          >
+                            <Phone className="w-4 h-4" />
+                            {resource.phone}
+                          </a>
+                        )}
+                        <a
+                          href={resource.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        >
+                          <Globe className="w-4 h-4" />
+                          Website
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-slate-400 text-sm mb-2">
-                    {resource.description}
-                  </p>
-                  <div className="flex flex-wrap items-center gap-4">
-                    {resource.phone && (
-                      <a
-                        href={`tel:${resource.phone.replace(/[^0-9+]/g, "")}`}
-                        className="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-sm"
-                      >
-                        <Phone className="w-4 h-4" />
-                        {resource.phone}
-                      </a>
-                    )}
-                    <a
-                      href={resource.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-sm"
-                    >
-                      <Globe className="w-4 h-4" />
-                      Visit Website
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           ))}

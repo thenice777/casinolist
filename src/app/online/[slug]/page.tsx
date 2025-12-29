@@ -5,9 +5,10 @@ import Footer from "@/components/layout/Footer";
 import StructuredData from "@/components/seo/StructuredData";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
 import TrackedLink from "@/components/casino/TrackedLink";
+import LicenseVerification from "@/components/casino/LicenseVerification";
 import { getOnlineCasinoBySlug } from "@/lib/casinos";
 import { getOnlineCasinoReviews, getReviewStats } from "@/lib/reviews";
-import { Globe, Star, Check, Gift, Shield, CreditCard, Gamepad2 } from "lucide-react";
+import { Globe, Star, Check, Gift, CreditCard, Gamepad2 } from "lucide-react";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -328,25 +329,9 @@ export default async function OnlineCasinoProfilePage({ params }: Props) {
               </div>
             </div>
 
-            {/* Licenses */}
+            {/* Licenses with Verification */}
             {casino.licenses && casino.licenses.length > 0 && (
-              <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
-                <div className="flex items-center gap-2 mb-4">
-                  <Shield className="w-5 h-5 text-emerald-400" />
-                  <h3 className="text-lg font-semibold text-white">Licenses</h3>
-                </div>
-                <div className="space-y-2">
-                  {casino.licenses.map((license) => (
-                    <div
-                      key={license}
-                      className="flex items-center gap-2 text-slate-300 text-sm"
-                    >
-                      <Check className="w-4 h-4 text-emerald-400" />
-                      <span>{license}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <LicenseVerification licenses={casino.licenses} />
             )}
 
             {/* Badges */}
