@@ -229,3 +229,90 @@ export async function getCasinosByDestination(destination: Destination) {
   }
   return [];
 }
+
+// Search
+export interface SearchResults {
+  landBased: LandBasedCasino[];
+  online: OnlineCasino[];
+  destinations: Destination[];
+}
+
+export async function searchCasinos(query: string): Promise<SearchResults> {
+  if (!query || query.length < 2) {
+    return { landBased: [], online: [], destinations: [] };
+  }
+
+  const searchPattern = `%${query}%`;
+
+  const [landBasedResults, onlineResults, destinationResults] = await Promise.all([
+    sql`
+      SELECT
+        id, name, slug, city, state, country, country_code,
+        description, short_description, website,
+        ST_Y(coordinates::geometry) as latitude,
+        ST_X(coordinates::geometry) as longitude,
+        is_24_hours, games, amenities,
+        has_hotel, has_restaurant, has_parking,
+        rating_overall, rating_games, rating_service,
+        rating_atmosphere, rating_value, rating_trust,
+        review_count, experience_tiers, verified_badges,
+        logo_url, hero_image_url, images,
+        is_featured, is_verified
+      FROM land_based_casinos
+      WHERE is_active = true
+        AND (
+          name ILIKE ${searchPattern}
+          OR city ILIKE ${searchPattern}
+          OR country ILIKE ${searchPattern}
+          OR description ILIKE ${searchPattern}
+        )
+      ORDER BY rating_overall DESC NULLS LAST
+      LIMIT 20
+    `,
+    sql`
+      SELECT
+        id, name, slug, description, short_description, website,
+        licenses, license_countries, restricted_countries,
+        welcome_bonus_description, welcome_bonus_amount, welcome_bonus_wagering,
+        game_providers, games, has_live_casino, has_sportsbook,
+        payment_methods, currencies,
+        rating_overall, rating_games, rating_service,
+        rating_ux as rating_atmosphere, rating_value, rating_trust,
+        review_count, experience_tiers, verified_badges,
+        logo_url, hero_image_url,
+        is_featured, is_verified, founded_year
+      FROM online_casinos
+      WHERE is_active = true
+        AND (
+          name ILIKE ${searchPattern}
+          OR description ILIKE ${searchPattern}
+        )
+      ORDER BY rating_overall DESC NULLS LAST
+      LIMIT 20
+    `,
+    sql`
+      SELECT
+        id, name, slug, type, city, state, country, country_code,
+        description, short_description, casino_overview, practical_info,
+        ST_Y(coordinates::geometry) as latitude,
+        ST_X(coordinates::geometry) as longitude,
+        casino_count, hero_image_url, images,
+        is_featured, meta_title, meta_description
+      FROM destinations
+      WHERE is_active = true
+        AND (
+          name ILIKE ${searchPattern}
+          OR country ILIKE ${searchPattern}
+          OR description ILIKE ${searchPattern}
+        )
+      ORDER BY casino_count DESC
+      LIMIT 10
+    `
+  ]);
+
+  return {
+    landBased: landBasedResults.map((row: Record<string, unknown>) => toCamelCase<LandBasedCasino>(row)),
+    online: onlineResults.map((row: Record<string, unknown>) => toCamelCase<OnlineCasino>(row)),
+    destinations: destinationResults.map((row: Record<string, unknown>) => toCamelCase<Destination>(row)),
+  };
+}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Search } from "lucide-react";
 
 const navItems = [
   { href: "/explore", label: "Explore Map" },
@@ -26,7 +27,7 @@ export default function Header() {
               key={item.href}
               href={item.href}
               className={cn(
-                "transition-colors",
+                "transition-colors hidden sm:block",
                 pathname === item.href
                   ? "text-emerald-400 font-medium"
                   : "text-slate-300 hover:text-white"
@@ -35,6 +36,18 @@ export default function Header() {
               {item.label}
             </Link>
           ))}
+          <Link
+            href="/search"
+            className={cn(
+              "transition-colors flex items-center gap-1",
+              pathname === "/search"
+                ? "text-emerald-400"
+                : "text-slate-300 hover:text-white"
+            )}
+            aria-label="Search"
+          >
+            <Search className="w-5 h-5" />
+          </Link>
         </div>
       </nav>
     </header>
