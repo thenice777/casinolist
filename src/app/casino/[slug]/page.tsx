@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import StructuredData from "@/components/seo/StructuredData";
 import { getLandBasedCasinoBySlug } from "@/lib/casinos";
 import { MapPin, Globe, Phone, Clock, Star, Check, Users } from "lucide-react";
 
@@ -51,6 +53,15 @@ export default async function CasinoProfilePage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
+      <StructuredData type="casino" casino={casino} />
+      <StructuredData
+        type="breadcrumb"
+        items={[
+          { name: "Home", url: "https://casinolist.io" },
+          { name: "Land-Based Casinos", url: "https://casinolist.io/land-based-casinos" },
+          { name: casino.name, url: `https://casinolist.io/casino/${casino.slug}` },
+        ]}
+      />
       <Header />
 
       {/* Hero */}
@@ -290,19 +301,7 @@ export default async function CasinoProfilePage({ params }: Props) {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-700 mt-12">
-        <div className="mx-auto max-w-7xl px-6 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-slate-500 text-sm">
-              © {new Date().getFullYear()} CasinoList.io. Know the House.
-            </p>
-            <p className="text-slate-500 text-sm">
-              Gamble responsibly. 18+ only.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

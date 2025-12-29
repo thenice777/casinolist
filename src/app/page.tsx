@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import StructuredData from "@/components/seo/StructuredData";
 import NewsletterSignup from "@/components/ui/NewsletterSignup";
 import { MapPin, Globe, Star, Users, Building2, ArrowRight } from "lucide-react";
 import { getCasinoStats, getLandBasedCasinos, getOnlineCasinos, getDestinations } from "@/lib/casinos";
@@ -15,6 +16,7 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
+      <StructuredData type="organization" />
       <Header />
 
       {/* Hero */}
