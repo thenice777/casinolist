@@ -8,11 +8,13 @@ import { getHelplineForCountry } from "@/lib/geo";
 interface ResponsibleGamblingGateProps {
   casinoName: string;
   countryCode?: string;
+  isOnline?: boolean;
 }
 
 export default function ResponsibleGamblingGate({
   casinoName,
   countryCode,
+  isOnline = false,
 }: ResponsibleGamblingGateProps) {
   const { state, acceptGate } = useTour();
   const [isAnimating, setIsAnimating] = useState(false);

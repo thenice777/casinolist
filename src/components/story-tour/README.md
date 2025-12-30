@@ -19,11 +19,18 @@ src/
 │   ├── page.tsx              # Server component with eligibility check
 │   └── StoryTourClient.tsx   # Client wrapper with state management
 │
+├── app/online/[slug]/tour/
+│   ├── page.tsx              # Online casino tour page
+│   └── OnlineTourClient.tsx  # Online tour client wrapper
+│
 ├── components/story-tour/
 │   ├── StoryTourProvider.tsx      # Context + state management
 │   ├── ResponsibleGamblingGate.tsx # Pre-tour acknowledgment + reality checks
 │   ├── ActContainer.tsx           # Act-locked navigation container
 │   ├── ProgressIndicator.tsx      # 4-act + zone progress UI
+│   ├── PlayerDetailsPanel.tsx     # Expandable data tables (odds, rules)
+│   ├── InterestFilters.tsx        # Behavior-based personalization
+│   ├── index.ts                   # Re-exports for cleaner imports
 │   │
 │   └── acts/
 │       ├── FirstImpressionsAct.tsx # Act 1: Arrival, trust signals
@@ -32,7 +39,8 @@ src/
 │       └── YourMoveAct.tsx         # Act 4: Verdict, ratings, CTA
 │
 ├── lib/
-│   └── tour-eligibility.ts   # Eligibility logic + cultural region mapping
+│   ├── tour-eligibility.ts   # Eligibility logic + cultural region mapping
+│   └── tour-narrative.ts     # Dynamic narrative generation utilities
 │
 └── types/
     └── tour.ts               # All tour-related TypeScript types
@@ -211,10 +219,12 @@ No automated tests yet. Manual testing checklist:
 
 ## Future Enhancements (Phase 2+)
 
-- [ ] Interest filters (behavior-based personalization)
+- [x] Interest filters (behavior-based personalization) - `InterestFilters.tsx`
+- [x] Online casino tour (`/online/[slug]/tour`) - Implemented
+- [x] Player details panels (odds, rules) - `PlayerDetailsPanel.tsx`
+- [x] Dynamic narrative generation - `tour-narrative.ts`
 - [ ] Full session tracking with analytics
-- [ ] Regional narrative template variations
-- [ ] Online casino tour (`/online/[slug]/tour`)
+- [ ] Regional narrative template variations (currently all use "journey")
 - [ ] Device-tier performance adaptation
 - [ ] `prefers-reduced-motion` Linear Mode
 - [ ] Audio ambiance (optional)
@@ -225,12 +235,73 @@ No automated tests yet. Manual testing checklist:
 |---------|------|
 | Types | `/src/types/tour.ts` |
 | Eligibility | `/src/lib/tour-eligibility.ts` |
+| Narratives | `/src/lib/tour-narrative.ts` |
 | State management | `/src/components/story-tour/StoryTourProvider.tsx` |
 | RG Gate | `/src/components/story-tour/ResponsibleGamblingGate.tsx` |
 | Navigation | `/src/components/story-tour/ActContainer.tsx` |
 | Progress UI | `/src/components/story-tour/ProgressIndicator.tsx` |
-| Tour page | `/src/app/casino/[slug]/tour/page.tsx` |
-| Client wrapper | `/src/app/casino/[slug]/tour/StoryTourClient.tsx` |
+| Player Details | `/src/components/story-tour/PlayerDetailsPanel.tsx` |
+| Interest Filters | `/src/components/story-tour/InterestFilters.tsx` |
+| Land-based tour | `/src/app/casino/[slug]/tour/page.tsx` |
+| Online tour | `/src/app/online/[slug]/tour/page.tsx` |
+
+## Using PlayerDetailsPanel
+
+Expandable panel for game rules, odds, and player tips:
+
+```typescript
+import { PlayerDetailsPanel, getGameRulesForCasino } from "@/components/story-tour";
+
+// Get relevant game rules based on casino's games
+const gameRules = getGameRulesForCasino(casino.games);
+
+<PlayerDetailsPanel
+  title="Player Details"
+  subtitle="Game rules, odds, and tips"
+  details={{
+    tableMinMax: { min: casino.minTableBet, max: casino.maxTableBet },
+    gameRules,
+    tips: ["Sign up for player's club before first session"],
+  }}
+/>
+```
+
+## Using InterestFilters
+
+Behavior-based personalization component:
+
+```typescript
+import { InterestFilters, getContentEmphasis } from "@/components/story-tour";
+
+// Modal/drawer mode
+<InterestFilters variant="modal" onClose={() => setShowFilters(false)} />
+
+// Inline mode
+<InterestFilters variant="inline" />
+
+// Use filters to adjust content
+const emphasis = getContentEmphasis(state.filters);
+// Returns: { prioritySections, highlightGames, showBonusDetails, showAmenities }
+```
+
+## Generating Dynamic Narratives
+
+Use tour-narrative.ts for engaging, data-driven content:
+
+```typescript
+import { generateSignatureMoment, generateActNarrative, generatePlayerDetails } from "@/lib/tour-narrative";
+
+// Get signature opening hook
+const hook = generateSignatureMoment(casino, "journey");
+
+// Get full act narrative
+const narrative = generateActNarrative(casino, "heart-of-house", "journey");
+// Returns: { headline, body, callout?, facts[] }
+
+// Get player-specific details
+const details = generatePlayerDetails(casino);
+// Returns: PlayerDetails with tableMinMax, gameRules, tips, etc.
+```
 
 ## Contact
 

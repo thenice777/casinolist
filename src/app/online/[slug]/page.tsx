@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import StructuredData from "@/components/seo/StructuredData";
@@ -8,7 +9,8 @@ import TrackedLink from "@/components/casino/TrackedLink";
 import LicenseVerification from "@/components/casino/LicenseVerification";
 import { getOnlineCasinoBySlug } from "@/lib/casinos";
 import { getOnlineCasinoReviews, getReviewStats } from "@/lib/reviews";
-import { Globe, Star, Check, Gift, CreditCard, Gamepad2 } from "lucide-react";
+import { checkOnlineTourEligibility } from "@/lib/tour-eligibility";
+import { Globe, Star, Check, Gift, CreditCard, Gamepad2, Play } from "lucide-react";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -72,6 +74,9 @@ export default async function OnlineCasinoProfilePage({ params }: Props) {
     getOnlineCasinoReviews(casino.id),
     getReviewStats(casino.id, "online"),
   ]);
+
+  // Check tour eligibility
+  const tourEligibility = checkOnlineTourEligibility(casino);
 
   const ratingDisplay = (rating: number | string | undefined, label: string) => {
     const numRating = Number(rating);
@@ -284,6 +289,35 @@ export default async function OnlineCasinoProfilePage({ params }: Props) {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Take the Tour CTA */}
+            {tourEligibility.isEligible && (
+              <Link
+                href={`/online/${casino.slug}/tour`}
+                className="block bg-gradient-to-br from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 rounded-xl p-6 border border-emerald-500/30 transition-all group"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                    <Play className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">
+                      Take the Tour
+                    </h3>
+                    <p className="text-emerald-200 text-sm">
+                      Virtual walk-through
+                    </p>
+                  </div>
+                </div>
+                <p className="text-emerald-100 text-sm mb-4">
+                  Explore {casino.name}'s games, bonuses, and features in an immersive experience.
+                </p>
+                <span className="inline-flex items-center gap-2 text-white font-medium text-sm group-hover:gap-3 transition-all">
+                  Start Tour
+                  <span className="text-emerald-200">→</span>
+                </span>
+              </Link>
+            )}
+
             {/* CTA */}
             {(casino.affiliateLink || casino.website) && (
               <div className="bg-emerald-600 rounded-xl p-6">
