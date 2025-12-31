@@ -85,9 +85,52 @@ export default function MapContainer({ markers }: MapContainerProps) {
 
   const hasActiveFilters = typeFilter !== "all" || minRating > 0 || selectedTiers.length > 0 || showFeaturedOnly;
 
+  // Count markers by type
+  const landBasedCount = markers.filter((m) => m.type === "land_based").length;
+  const onlineCount = markers.filter((m) => m.type === "online").length;
+
   return (
     <div className="w-full h-full relative">
       <CasinoMap markers={filteredMarkers} />
+
+      {/* Quick Type Toggle - Always visible */}
+      <div className="absolute top-20 left-4 bg-slate-900/90 backdrop-blur-sm rounded-lg p-1 border border-slate-700 z-20 flex gap-1">
+        <button
+          onClick={() => setTypeFilter("all")}
+          className={cn(
+            "px-3 py-1.5 rounded text-xs font-medium transition-colors",
+            typeFilter === "all"
+              ? "bg-slate-700 text-white"
+              : "text-slate-400 hover:text-white"
+          )}
+        >
+          All ({markers.length})
+        </button>
+        <button
+          onClick={() => setTypeFilter("land_based")}
+          className={cn(
+            "px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1",
+            typeFilter === "land_based"
+              ? "bg-emerald-600 text-white"
+              : "text-slate-400 hover:text-white"
+          )}
+        >
+          <Building2 className="w-3 h-3" />
+          Land ({landBasedCount})
+        </button>
+        <button
+          onClick={() => setTypeFilter("online")}
+          className={cn(
+            "px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1",
+            typeFilter === "online"
+              ? "bg-blue-600 text-white"
+              : "text-slate-400 hover:text-white"
+          )}
+        >
+          <Globe2 className="w-3 h-3" />
+          Online ({onlineCount})
+        </button>
+      </div>
 
       {/* Filter Toggle Button */}
       <button

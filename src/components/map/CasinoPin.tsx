@@ -11,6 +11,10 @@ import {
   Coins,
   Sparkles,
   Building2,
+  Globe,
+  ShieldCheck,
+  ShieldAlert,
+  Shield,
 } from "lucide-react";
 
 interface CasinoPinProps {
@@ -64,10 +68,19 @@ export default function CasinoPin({
 
   // Online casino colors based on trust level
   const onlineColors = {
-    high: "bg-blue-500 shadow-blue-500/50",
+    high: "bg-emerald-500 shadow-emerald-500/50",
     medium: "bg-amber-500 shadow-amber-500/50",
     low: "bg-red-500 shadow-red-500/50",
   };
+
+  // Trust level icons for online casinos
+  const trustIcons = {
+    high: ShieldCheck,
+    medium: Shield,
+    low: ShieldAlert,
+  };
+
+  const TrustIcon = trustIcons[trustLevel];
 
   // Land-based casino colors
   const landBasedColor = isFeatured
@@ -87,8 +100,12 @@ export default function CasinoPin({
         isOnline && "ring-2 ring-white/30"
       )}
     >
-      {/* Icon */}
-      <TierIcon className={cn(iconSizes[size], "text-white")} />
+      {/* Icon - Globe for online, Tier icon for land-based */}
+      {isOnline ? (
+        <Globe className={cn(iconSizes[size], "text-white")} />
+      ) : (
+        <TierIcon className={cn(iconSizes[size], "text-white")} />
+      )}
 
       {/* Pin tail for land-based casinos */}
       {!isOnline && (
@@ -101,9 +118,23 @@ export default function CasinoPin({
         />
       )}
 
-      {/* Featured indicator dot */}
+      {/* Featured indicator dot for land-based */}
       {isFeatured && !isOnline && (
         <span className="absolute -top-1 -right-1 w-2 h-2 bg-white rounded-full" />
+      )}
+
+      {/* Trust level badge for online casinos */}
+      {isOnline && (
+        <span
+          className={cn(
+            "absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center",
+            trustLevel === "high" && "bg-emerald-600",
+            trustLevel === "medium" && "bg-amber-600",
+            trustLevel === "low" && "bg-red-600"
+          )}
+        >
+          <TrustIcon className="w-2.5 h-2.5 text-white" />
+        </span>
       )}
     </button>
   );
