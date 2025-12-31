@@ -112,7 +112,7 @@ export async function getOnlineCasinoBySlug(slug: string) {
   return toCamelCase<OnlineCasino>(results[0] as Record<string, unknown>);
 }
 
-// Map markers
+// Map markers - Land-based casinos
 export async function getCasinoMapMarkers(): Promise<CasinoMapMarker[]> {
   const results = await sql`
     SELECT
@@ -139,6 +139,57 @@ export async function getCasinoMapMarkers(): Promise<CasinoMapMarker[]> {
     city: row.city as string,
     country: row.country as string,
   }));
+}
+
+// Map markers - Online casinos (positioned at license jurisdiction)
+export async function getOnlineCasinoMapMarkers(): Promise<CasinoMapMarker[]> {
+  const results = await sql`
+    SELECT
+      oc.id, oc.name, oc.slug, 'online' as type,
+      ST_Y(lj.coordinates::geometry) as latitude,
+      ST_X(lj.coordinates::geometry) as longitude,
+      oc.rating_overall, oc.is_featured, oc.experience_tiers,
+      lj.name as jurisdiction_name,
+      lj.short_name as jurisdiction_short_name,
+      lj.id as jurisdiction_id,
+      lj.country,
+      lj.trust_level,
+      oc.licenses
+    FROM online_casinos oc
+    JOIN license_jurisdictions lj
+      ON oc.primary_license_jurisdiction_id = lj.id
+    WHERE oc.is_active = true
+      AND lj.is_active = true
+    ORDER BY oc.is_featured DESC, oc.rating_overall DESC
+  `;
+
+  return results.map((row: Record<string, unknown>) => ({
+    id: row.id as string,
+    name: row.name as string,
+    slug: row.slug as string,
+    type: "online" as const,
+    latitude: parseFloat(row.latitude as string),
+    longitude: parseFloat(row.longitude as string),
+    ratingOverall: parseFloat(row.rating_overall as string) || 0,
+    isFeatured: row.is_featured as boolean,
+    experienceTiers: (row.experience_tiers as ExperienceTier[]) || [],
+    city: row.jurisdiction_name as string,
+    country: row.country as string,
+    jurisdictionId: row.jurisdiction_id as string,
+    jurisdictionName: row.jurisdiction_name as string,
+    jurisdictionShortName: row.jurisdiction_short_name as string,
+    trustLevel: row.trust_level as "high" | "medium" | "low",
+    licenses: row.licenses as string[],
+  }));
+}
+
+// Combined map markers (both land-based and online)
+export async function getAllCasinoMapMarkers(): Promise<CasinoMapMarker[]> {
+  const [landBased, online] = await Promise.all([
+    getCasinoMapMarkers(),
+    getOnlineCasinoMapMarkers(),
+  ]);
+  return [...landBased, ...online];
 }
 
 // Stats

@@ -3,8 +3,9 @@
 import { useTour } from "../StoryTourProvider";
 import { ZoneContent } from "../ActContainer";
 import { LandBasedCasino, OnlineCasino } from "@/types/casino";
-import { MapPin, Clock, Shield, Star, Check, Globe } from "lucide-react";
+import { MapPin, Clock, Shield, Star, Check, Globe, Award, Sparkles } from "lucide-react";
 import TrackedLink from "@/components/casino/TrackedLink";
+import { generateSignatureMoment, generateActNarrative } from "@/lib/tour-narrative";
 
 interface FirstImpressionsActProps {
   casino: LandBasedCasino | OnlineCasino;
@@ -33,26 +34,33 @@ function ArrivalZone({
   const landBased = casino as LandBasedCasino;
   const online = casino as OnlineCasino;
 
-  // Generate signature moment based on data
-  const getSignatureMoment = (): string => {
-    if (isLandBased) {
-      if (landBased.experienceTiers?.includes("historic_icon")) {
-        return `Step into history at ${casino.name}. Where legends were made and traditions endure.`;
-      }
-      if (landBased.experienceTiers?.includes("destination")) {
-        return `${casino.name} isn't just a casino—it's a destination. From the moment you arrive, you'll understand why.`;
-      }
-      if (landBased.is24Hours) {
-        return `The doors at ${casino.name} never close. Day or night, the floor is alive.`;
-      }
-      return `Welcome to ${casino.name}. Here's what awaits you.`;
-    } else {
-      if (online.isFeatured) {
-        return `${casino.name} has earned its reputation. Let's see why players keep coming back.`;
-      }
-      return `${casino.name} opens its virtual doors. Here's your first look inside.`;
+  // Get dynamic signature moment from narrative generator
+  const signatureMoment = generateSignatureMoment(casino, "journey");
+
+  // Get act narrative for additional context
+  const narrative = generateActNarrative(casino, "first-impressions", "journey");
+
+  // Determine experience tier badge
+  const getExperienceBadge = () => {
+    if (casino.experienceTiers?.includes("historic_icon")) {
+      return { icon: <Award className="w-3 h-3" />, label: "Historic Icon" };
     }
+    if (casino.experienceTiers?.includes("destination")) {
+      return { icon: <Sparkles className="w-3 h-3" />, label: "Destination Casino" };
+    }
+    if (casino.experienceTiers?.includes("high_roller_haven")) {
+      return { icon: <Star className="w-3 h-3" />, label: "High Roller Haven" };
+    }
+    if (casino.experienceTiers?.includes("poker_paradise")) {
+      return { icon: <Award className="w-3 h-3" />, label: "Poker Paradise" };
+    }
+    if (casino.isFeatured) {
+      return { icon: <Sparkles className="w-3 h-3" />, label: "Featured" };
+    }
+    return null;
   };
+
+  const experienceBadge = getExperienceBadge();
 
   return (
     <ZoneContent subtitle="Act 1 • Zone 1" title="First Impressions">
@@ -72,6 +80,16 @@ function ArrivalZone({
 
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent" />
+
+        {/* Experience tier badge */}
+        {experienceBadge && (
+          <div className="absolute top-4 left-4">
+            <span className="bg-emerald-500/90 text-white text-xs font-medium px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
+              {experienceBadge.icon}
+              {experienceBadge.label}
+            </span>
+          </div>
+        )}
 
         {/* Name overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -93,11 +111,16 @@ function ArrivalZone({
         </div>
       </div>
 
-      {/* Signature moment */}
-      <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700 mb-6">
-        <p className="text-xl text-slate-200 leading-relaxed italic">
-          "{getSignatureMoment()}"
+      {/* Signature moment - using dynamic narrative */}
+      <div className="bg-gradient-to-r from-emerald-900/30 to-slate-800/50 rounded-xl p-6 border border-emerald-500/20 mb-6">
+        <p className="text-xl text-slate-100 leading-relaxed">
+          {signatureMoment}
         </p>
+        {narrative?.body && (
+          <p className="text-slate-400 mt-3 text-sm">
+            {narrative.body}
+          </p>
+        )}
       </div>
 
       {/* Quick facts */}
@@ -114,6 +137,20 @@ function ArrivalZone({
               label="Rating"
               value={casino.ratingOverall > 0 ? `${casino.ratingOverall.toFixed(1)}/10` : "New"}
             />
+            {landBased.slotCount && landBased.slotCount > 0 && (
+              <QuickFact
+                icon={<Sparkles className="w-4 h-4" />}
+                label="Slots"
+                value={`${landBased.slotCount.toLocaleString()}+`}
+              />
+            )}
+            {landBased.tableCount && landBased.tableCount > 0 && (
+              <QuickFact
+                icon={<Award className="w-4 h-4" />}
+                label="Tables"
+                value={landBased.tableCount.toString()}
+              />
+            )}
           </>
         )}
         {!isLandBased && (
@@ -128,9 +165,40 @@ function ArrivalZone({
               label="Rating"
               value={casino.ratingOverall > 0 ? `${casino.ratingOverall.toFixed(1)}/10` : "New"}
             />
+            {online.slotCount && online.slotCount > 0 && (
+              <QuickFact
+                icon={<Sparkles className="w-4 h-4" />}
+                label="Slots"
+                value={`${online.slotCount.toLocaleString()}+`}
+              />
+            )}
+            {online.hasLiveCasino && (
+              <QuickFact
+                icon={<Globe className="w-4 h-4" />}
+                label="Live Casino"
+                value="Available"
+              />
+            )}
           </>
         )}
       </div>
+
+      {/* Key facts callout */}
+      {narrative?.facts && narrative.facts.length > 0 && (
+        <div className="mt-6 bg-slate-800/30 rounded-xl p-4 border border-slate-700">
+          <h4 className="text-sm font-medium text-slate-400 mb-3">At a Glance</h4>
+          <div className="flex flex-wrap gap-2">
+            {narrative.facts.map((fact, index) => (
+              <span
+                key={index}
+                className="bg-slate-700/50 text-slate-300 text-xs px-3 py-1 rounded-full"
+              >
+                {fact}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </ZoneContent>
   );
 }
@@ -212,7 +280,6 @@ function TrustSignalsZone({
               variant="secondary"
               size="sm"
               subid="tour_act1_soft"
-              onClick={() => onCTAClick("tour_act1_soft")}
             >
               Learn more at {casino.name}
             </TrackedLink>

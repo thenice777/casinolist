@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import MapContainer from "@/components/map/MapContainer";
-import { getCasinoMapMarkers } from "@/lib/casinos";
+import { getAllCasinoMapMarkers } from "@/lib/casinos";
 
 export const metadata: Metadata = {
   title: "Explore Casinos Worldwide | Know the House",
@@ -10,7 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default async function ExplorePage() {
-  const markers = await getCasinoMapMarkers();
+  const markers = await getAllCasinoMapMarkers();
+  const landBasedCount = markers.filter(m => m.type === "land_based").length;
+  const onlineCount = markers.filter(m => m.type === "online").length;
 
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col">
@@ -55,23 +57,37 @@ export default async function ExplorePage() {
           <p className="text-sm text-slate-400 mb-3">
             Click on any pin to discover casino details. Use filters to narrow your search.
           </p>
-          <div className="flex items-center gap-4 text-xs text-slate-500">
+          <div className="flex items-center gap-4 text-xs text-slate-500 flex-wrap">
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-              Casinos
+              Land-Based
             </span>
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-amber-400"></span>
               Featured
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-blue-400 ring-1 ring-white/30"></span>
+              Online
             </span>
           </div>
         </div>
 
         {/* Stats */}
         <div className="absolute bottom-4 left-4 bg-slate-900/90 backdrop-blur-sm rounded-lg px-4 py-2 border border-slate-700">
-          <span className="text-sm text-slate-400">
-            <span className="text-white font-medium">{markers.length}</span> casino{markers.length !== 1 ? 's' : ''} in database
-          </span>
+          <div className="flex items-center gap-4 text-sm">
+            <span className="text-slate-400">
+              <span className="text-white font-medium">{markers.length}</span> total
+            </span>
+            <span className="text-slate-500">•</span>
+            <span className="text-emerald-400">
+              <span className="font-medium">{landBasedCount}</span> land-based
+            </span>
+            <span className="text-slate-500">•</span>
+            <span className="text-blue-400">
+              <span className="font-medium">{onlineCount}</span> online
+            </span>
+          </div>
         </div>
       </div>
     </div>

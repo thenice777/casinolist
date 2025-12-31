@@ -3,8 +3,10 @@
 import { useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { CasinoMapMarker, ExperienceTier } from "@/types/casino";
-import { Filter, Star, X } from "lucide-react";
+import { Filter, Star, X, Building2, Globe2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+type CasinoTypeFilter = "all" | "land_based" | "online";
 
 const CasinoMap = dynamic(() => import("./CasinoMap"), {
   ssr: false,
@@ -32,12 +34,18 @@ const experienceTierOptions: { value: ExperienceTier; label: string }[] = [
 
 export default function MapContainer({ markers }: MapContainerProps) {
   const [showFilters, setShowFilters] = useState(false);
+  const [typeFilter, setTypeFilter] = useState<CasinoTypeFilter>("all");
   const [minRating, setMinRating] = useState(0);
   const [selectedTiers, setSelectedTiers] = useState<ExperienceTier[]>([]);
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
 
   const filteredMarkers = useMemo(() => {
     return markers.filter((marker) => {
+      // Type filter
+      if (typeFilter !== "all" && marker.type !== typeFilter) {
+        return false;
+      }
+
       // Rating filter
       if (minRating > 0 && marker.ratingOverall < minRating) {
         return false;
@@ -48,8 +56,8 @@ export default function MapContainer({ markers }: MapContainerProps) {
         return false;
       }
 
-      // Experience tier filter
-      if (selectedTiers.length > 0) {
+      // Experience tier filter (only applies to land-based)
+      if (selectedTiers.length > 0 && marker.type === "land_based") {
         const hasMatchingTier = marker.experienceTiers.some((tier) =>
           selectedTiers.includes(tier)
         );
@@ -60,7 +68,7 @@ export default function MapContainer({ markers }: MapContainerProps) {
 
       return true;
     });
-  }, [markers, minRating, selectedTiers, showFeaturedOnly]);
+  }, [markers, typeFilter, minRating, selectedTiers, showFeaturedOnly]);
 
   const toggleTier = (tier: ExperienceTier) => {
     setSelectedTiers((prev) =>
@@ -69,12 +77,13 @@ export default function MapContainer({ markers }: MapContainerProps) {
   };
 
   const clearFilters = () => {
+    setTypeFilter("all");
     setMinRating(0);
     setSelectedTiers([]);
     setShowFeaturedOnly(false);
   };
 
-  const hasActiveFilters = minRating > 0 || selectedTiers.length > 0 || showFeaturedOnly;
+  const hasActiveFilters = typeFilter !== "all" || minRating > 0 || selectedTiers.length > 0 || showFeaturedOnly;
 
   return (
     <div className="w-full h-full relative">
@@ -108,6 +117,50 @@ export default function MapContainer({ markers }: MapContainerProps) {
                 Clear
               </button>
             )}
+          </div>
+
+          {/* Casino Type Toggle */}
+          <div className="mb-4">
+            <label className="text-slate-400 text-sm block mb-2">
+              Casino Type
+            </label>
+            <div className="flex rounded-lg bg-slate-800 p-1">
+              <button
+                onClick={() => setTypeFilter("all")}
+                className={cn(
+                  "flex-1 px-3 py-1.5 rounded text-sm transition-colors flex items-center justify-center gap-1.5",
+                  typeFilter === "all"
+                    ? "bg-emerald-600 text-white"
+                    : "text-slate-400 hover:text-white"
+                )}
+              >
+                All
+              </button>
+              <button
+                onClick={() => setTypeFilter("land_based")}
+                className={cn(
+                  "flex-1 px-3 py-1.5 rounded text-sm transition-colors flex items-center justify-center gap-1.5",
+                  typeFilter === "land_based"
+                    ? "bg-emerald-600 text-white"
+                    : "text-slate-400 hover:text-white"
+                )}
+              >
+                <Building2 className="w-3.5 h-3.5" />
+                Land
+              </button>
+              <button
+                onClick={() => setTypeFilter("online")}
+                className={cn(
+                  "flex-1 px-3 py-1.5 rounded text-sm transition-colors flex items-center justify-center gap-1.5",
+                  typeFilter === "online"
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-400 hover:text-white"
+                )}
+              >
+                <Globe2 className="w-3.5 h-3.5" />
+                Online
+              </button>
+            </div>
           </div>
 
           {/* Featured Toggle */}
@@ -153,28 +206,51 @@ export default function MapContainer({ markers }: MapContainerProps) {
             </div>
           </div>
 
-          {/* Experience Tier Filter */}
-          <div>
-            <label className="text-slate-400 text-sm block mb-2">
-              Experience Type
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {experienceTierOptions.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => toggleTier(option.value)}
-                  className={cn(
-                    "px-2 py-1 rounded text-xs transition-colors",
-                    selectedTiers.includes(option.value)
-                      ? "bg-emerald-600 text-white"
-                      : "bg-slate-700 text-slate-300 hover:bg-slate-600"
-                  )}
-                >
-                  {option.label}
-                </button>
-              ))}
+          {/* Experience Tier Filter - only for land-based */}
+          {typeFilter !== "online" && (
+            <div>
+              <label className="text-slate-400 text-sm block mb-2">
+                Experience Type
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {experienceTierOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => toggleTier(option.value)}
+                    className={cn(
+                      "px-2 py-1 rounded text-xs transition-colors",
+                      selectedTiers.includes(option.value)
+                        ? "bg-emerald-600 text-white"
+                        : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                    )}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Online Trust Level hint */}
+          {typeFilter === "online" && (
+            <div className="text-xs text-slate-500 border-t border-slate-700 pt-3 mt-2">
+              <p className="mb-1">Online casinos are mapped by license jurisdiction.</p>
+              <div className="flex gap-3 mt-2">
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  High Trust
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+                  Medium
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-red-400"></span>
+                  Lower
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

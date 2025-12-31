@@ -22,6 +22,12 @@ import HeartOfHouseAct from "@/components/story-tour/acts/HeartOfHouseAct";
 import FullPictureAct from "@/components/story-tour/acts/FullPictureAct";
 import YourMoveAct from "@/components/story-tour/acts/YourMoveAct";
 
+import InterestFilters, {
+  FilterTriggerButton,
+} from "@/components/story-tour/InterestFilters";
+import SessionTracker from "@/components/story-tour/SessionTracker";
+import TourSkeleton from "@/components/story-tour/TourSkeleton";
+
 import { X, ArrowLeft, Clock } from "lucide-react";
 import Link from "next/link";
 
@@ -64,6 +70,7 @@ function TourContent({
     sessionDurationMinutes,
   } = useTour();
   const [helpline, setHelpline] = useState(getHelplineForCountry(null));
+  const [showFilters, setShowFilters] = useState(false);
 
   // Initialize tour on mount
   useEffect(() => {
@@ -81,13 +88,9 @@ function TourContent({
     router.push(`/casino/${casino.slug}`);
   };
 
-  // Show loading state
+  // Show loading state with skeleton
   if (state.isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center">
-        <div className="animate-pulse text-slate-400">Loading tour...</div>
-      </div>
-    );
+    return <TourSkeleton />;
   }
 
   // Render current act
@@ -127,9 +130,20 @@ function TourContent({
         />
       )}
 
+      {/* Interest Filters Modal */}
+      {showFilters && (
+        <InterestFilters
+          variant="modal"
+          onClose={() => setShowFilters(false)}
+        />
+      )}
+
       {/* Main Tour Content */}
       {state.isGateAccepted && (
         <>
+          {/* Session Analytics Tracker */}
+          <SessionTracker casinoName={casino.name} />
+
           {/* Header */}
           <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700">
             <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -147,7 +161,17 @@ function TourContent({
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                {/* Filter trigger */}
+                <FilterTriggerButton
+                  onClick={() => setShowFilters(true)}
+                  hasFilters={
+                    (state.filters?.lookingFor?.length ?? 0) > 0 ||
+                    (state.filters?.usuallyPlay?.length ?? 0) > 0 ||
+                    state.filters?.sessionStyle !== null
+                  }
+                />
+
                 {/* Session timer */}
                 <div className="hidden md:flex items-center gap-1 text-slate-500 text-sm">
                   <Clock className="w-4 h-4" />

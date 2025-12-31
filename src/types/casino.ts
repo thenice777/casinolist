@@ -278,4 +278,10 @@ export interface CasinoMapMarker {
   experienceTiers: ExperienceTier[];
   city: string;
   country: string;
+  // Online casino specific fields
+  jurisdictionId?: string;
+  jurisdictionName?: string;
+  jurisdictionShortName?: string;
+  trustLevel?: "high" | "medium" | "low";
+  licenses?: string[];
 }

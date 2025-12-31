@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   turbopack: {
     resolveAlias: {
-      "react-map-gl": "react-map-gl/dist/esm/index.js",
+      "react-map-gl/mapbox": "react-map-gl/dist/mapbox.js",
       "mapbox-gl": "mapbox-gl/dist/mapbox-gl.js",
     },
   },

@@ -1,17 +1,19 @@
 "use client";
 
-import { useState } from "react";
 import { useTour } from "../StoryTourProvider";
 import { ZoneContent } from "../ActContainer";
+import PlayerDetailsPanel, { getGameRulesForCasino } from "../PlayerDetailsPanel";
 import { LandBasedCasino, OnlineCasino } from "@/types/casino";
+import { generatePlayerDetails } from "@/lib/tour-narrative";
 import {
   Dices,
   Spade,
   CircleDot,
   TrendingUp,
-  ChevronDown,
-  ChevronUp,
   Gamepad2,
+  Users,
+  Zap,
+  Trophy,
 } from "lucide-react";
 import TrackedLink from "@/components/casino/TrackedLink";
 
@@ -145,119 +147,129 @@ function TableGamesZone({
   isLandBased: boolean;
   onCTAClick: (location: string) => void;
 }) {
-  const [showDetails, setShowDetails] = useState(false);
   const landBased = casino as LandBasedCasino;
   const online = casino as OnlineCasino;
+
+  // Generate player details from casino data
+  const playerDetails = generatePlayerDetails(casino);
+  const gameRules = getGameRulesForCasino(casino.games || []);
+
+  // Merge generated details with game rules
+  const fullDetails = {
+    ...playerDetails,
+    gameRules: gameRules.length > 0 ? gameRules : undefined,
+  };
+
+  // Get table game specific games
+  const tableGames = (casino.games || []).filter((g) =>
+    /blackjack|roulette|baccarat|craps|poker|21/i.test(g)
+  );
 
   return (
     <ZoneContent subtitle="Act 2 • Zone 2" title="Table Games">
       <div className="space-y-6">
+        {/* Narrative intro */}
+        <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+          <p className="text-lg text-slate-200 leading-relaxed">
+            {isLandBased
+              ? `The felt awaits. ${casino.name}'s table games offer everything from classic blackjack to high-stakes baccarat.`
+              : `From your screen to the felt. ${casino.name} brings authentic table action with professional dealers and real-time play.`}
+          </p>
+        </div>
+
         {/* Stakes info */}
         {isLandBased && (landBased.minTableBet || landBased.maxTableBet) && (
           <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
             <h3 className="text-lg font-semibold text-white mb-4">Table Limits</h3>
             <div className="grid grid-cols-2 gap-4">
               {landBased.minTableBet && (
-                <div>
-                  <p className="text-slate-400 text-sm">Minimum Bet</p>
-                  <p className="text-2xl font-bold text-emerald-400">
+                <div className="bg-slate-700/50 rounded-lg p-4">
+                  <p className="text-slate-400 text-sm mb-1">Minimum Bet</p>
+                  <p className="text-3xl font-bold text-emerald-400">
                     ${landBased.minTableBet}
                   </p>
+                  <p className="text-slate-500 text-xs mt-1">Starting point</p>
                 </div>
               )}
               {landBased.maxTableBet && (
-                <div>
-                  <p className="text-slate-400 text-sm">Maximum Bet</p>
-                  <p className="text-2xl font-bold text-white">
+                <div className="bg-slate-700/50 rounded-lg p-4">
+                  <p className="text-slate-400 text-sm mb-1">Maximum Bet</p>
+                  <p className="text-3xl font-bold text-white">
                     ${landBased.maxTableBet.toLocaleString()}
                   </p>
+                  <p className="text-slate-500 text-xs mt-1">Table maximum</p>
                 </div>
               )}
             </div>
           </div>
         )}
 
-        {/* High limit room */}
+        {/* High limit room callout */}
         {isLandBased && landBased.hasHighLimitRoom && (
           <div className="bg-gradient-to-r from-amber-900/30 to-slate-800 rounded-xl p-6 border border-amber-700/30">
-            <div className="flex items-center gap-3">
-              <Spade className="w-6 h-6 text-amber-400" />
-              <div>
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-amber-500/20 rounded-xl flex items-center justify-center">
+                <Trophy className="w-7 h-7 text-amber-400" />
+              </div>
+              <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white">High Limit Room</h3>
                 <p className="text-slate-400 text-sm">
-                  Dedicated space for serious players
+                  Dedicated space for serious players with elevated minimums and personalized service.
                 </p>
               </div>
             </div>
           </div>
         )}
 
-        {/* Player Details Panel (expandable) */}
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700 overflow-hidden">
-          <button
-            onClick={() => setShowDetails(!showDetails)}
-            className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-slate-700/30 transition-colors"
-          >
-            <div>
-              <h3 className="text-white font-medium">Player Details</h3>
-              <p className="text-slate-400 text-sm">Game rules, odds, and tips</p>
-            </div>
-            {showDetails ? (
-              <ChevronUp className="w-5 h-5 text-slate-400" />
-            ) : (
-              <ChevronDown className="w-5 h-5 text-slate-400" />
-            )}
-          </button>
-
-          {showDetails && (
-            <div className="px-6 py-4 border-t border-slate-700 space-y-4">
-              <div>
-                <h4 className="text-sm font-medium text-slate-300 mb-2">House Edge (Typical)</h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Blackjack (basic strategy)</span>
-                    <span className="text-white">0.5%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Baccarat (banker)</span>
-                    <span className="text-white">1.06%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Roulette (single zero)</span>
-                    <span className="text-white">2.7%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Craps (pass line)</span>
-                    <span className="text-white">1.41%</span>
-                  </div>
+        {/* Table games available */}
+        {tableGames.length > 0 && (
+          <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+            <h3 className="text-lg font-semibold text-white mb-4">Available Table Games</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {tableGames.slice(0, 6).map((game) => (
+                <div
+                  key={game}
+                  className="flex items-center gap-2 bg-slate-700/50 px-3 py-2 rounded-lg"
+                >
+                  <Dices className="w-4 h-4 text-emerald-400" />
+                  <span className="text-slate-300 text-sm capitalize">{game}</span>
                 </div>
-              </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-              <div className="pt-2 border-t border-slate-700">
-                <p className="text-xs text-slate-500">
-                  Note: House edge varies by specific rules. Always check table-specific rules before playing.
+        {/* Player Details Panel - using the component */}
+        <PlayerDetailsPanel
+          title="Player Details"
+          subtitle="Game rules, odds, and strategic tips"
+          details={fullDetails}
+          variant="default"
+        />
+
+        {/* Online CTA */}
+        {!isLandBased && online.affiliateLink && (
+          <div className="bg-gradient-to-r from-emerald-900/50 to-slate-800 rounded-xl p-6 border border-emerald-700/30">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <h3 className="text-lg font-semibold text-white">Ready to Play?</h3>
+                <p className="text-slate-400 text-sm">
+                  Experience live dealers and real-time action
                 </p>
               </div>
+              <TrackedLink
+                casinoId={casino.id}
+                casinoType="online"
+                affiliateLink={online.affiliateLink}
+                websiteUrl={online.website}
+                casinoName={casino.name}
+                variant="primary"
+                size="md"
+                subid="tour_act2_gaming"
+              >
+                Play Now at {casino.name}
+              </TrackedLink>
             </div>
-          )}
-        </div>
-
-        {/* CTA */}
-        {!isLandBased && online.affiliateLink && (
-          <div className="text-center pt-4">
-            <TrackedLink
-              casinoId={casino.id}
-              casinoType="online"
-              affiliateLink={online.affiliateLink}
-              websiteUrl={online.website}
-              casinoName={casino.name}
-              variant="primary"
-              size="md"
-              subid="tour_act2_gaming"
-              onClick={() => onCTAClick("tour_act2_gaming")}
-            >
-              Explore {casino.name}'s Tables
-            </TrackedLink>
           </div>
         )}
       </div>
@@ -274,20 +286,28 @@ function PokerZone({
   isLandBased: boolean;
 }) {
   const landBased = casino as LandBasedCasino;
+  const online = casino as OnlineCasino;
 
   const hasPoker = isLandBased ? landBased.hasPokerRoom : casino.games?.some(g =>
     g.toLowerCase().includes("poker")
+  );
+
+  // Get poker variants from games
+  const pokerVariants = (casino.games || []).filter((g) =>
+    /poker|holdem|omaha|stud/i.test(g)
   );
 
   if (!hasPoker) {
     return (
       <ZoneContent subtitle="Act 2 • Zone 3" title="Poker Room">
         <div className="bg-slate-800/50 rounded-xl p-8 border border-slate-700 text-center">
-          <Spade className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">No Dedicated Poker Room</h3>
-          <p className="text-slate-400">
+          <Spade className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+          <h3 className="text-xl font-medium text-white mb-3">No Dedicated Poker Room</h3>
+          <p className="text-slate-400 max-w-md mx-auto">
             {casino.name} doesn't have a dedicated poker room.
-            {isLandBased ? " Look for table poker games on the main floor." : " Check out video poker in the game library."}
+            {isLandBased
+              ? " Look for table poker games on the main floor, or check with staff for special tournament events."
+              : " Video poker and casino poker variants are available in the game library."}
           </p>
         </div>
       </ZoneContent>
@@ -297,25 +317,87 @@ function PokerZone({
   return (
     <ZoneContent subtitle="Act 2 • Zone 3" title="Poker Room">
       <div className="space-y-6">
-        <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center">
-              <Spade className="w-6 h-6 text-emerald-400" />
+        {/* Hero card */}
+        <div className="bg-gradient-to-br from-emerald-900/40 to-slate-800 rounded-xl p-6 border border-emerald-700/30">
+          <div className="flex items-start gap-4">
+            <div className="w-16 h-16 bg-emerald-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Spade className="w-8 h-8 text-emerald-400" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-white">Poker Room Available</h3>
-              {isLandBased && landBased.pokerRoomTables && (
-                <p className="text-slate-400">{landBased.pokerRoomTables} tables</p>
-              )}
+              <h3 className="text-xl font-semibold text-white mb-2">
+                {isLandBased ? "Dedicated Poker Room" : "Poker Games Available"}
+              </h3>
+              <p className="text-slate-300">
+                {isLandBased
+                  ? `${casino.name}'s poker room is where the serious players gather. From cash games to tournaments, the action never stops.`
+                  : `${casino.name} brings the poker room to you with live dealers and real-time multi-table action.`}
+              </p>
             </div>
           </div>
-
-          <p className="text-slate-300">
-            {isLandBased
-              ? `${casino.name} offers a dedicated poker room for enthusiasts. Check with the casino for current games and stakes.`
-              : `Find poker games in the ${casino.name} game library, including video poker and live dealer options.`}
-          </p>
         </div>
+
+        {/* Poker room stats */}
+        {isLandBased && (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {landBased.pokerRoomTables && (
+              <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700 text-center">
+                <p className="text-3xl font-bold text-white">{landBased.pokerRoomTables}</p>
+                <p className="text-slate-400 text-sm">Tables</p>
+              </div>
+            )}
+            <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700 text-center">
+              <p className="text-3xl font-bold text-emerald-400">24/7</p>
+              <p className="text-slate-400 text-sm">Action</p>
+            </div>
+            <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700 text-center">
+              <div className="flex items-center justify-center gap-1">
+                <Trophy className="w-5 h-5 text-amber-400" />
+                <p className="text-lg font-bold text-white">Daily</p>
+              </div>
+              <p className="text-slate-400 text-sm">Tournaments</p>
+            </div>
+          </div>
+        )}
+
+        {/* Poker variants */}
+        {pokerVariants.length > 0 && (
+          <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+            <h4 className="text-lg font-semibold text-white mb-4">Poker Games</h4>
+            <div className="flex flex-wrap gap-2">
+              {pokerVariants.map((variant) => (
+                <span
+                  key={variant}
+                  className="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-sm capitalize"
+                >
+                  {variant}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Poker tips */}
+        <PlayerDetailsPanel
+          title="Poker Room Intel"
+          subtitle="What you need to know before sitting down"
+          variant="highlight"
+          details={{
+            pokerInfo: isLandBased && landBased.pokerRoomTables
+              ? {
+                  tables: landBased.pokerRoomTables,
+                  tournaments: true,
+                }
+              : undefined,
+            tips: [
+              "Sign up for the room's waiting list as soon as you arrive",
+              "Buy-in requirements vary by table - ask the floor before sitting",
+              isLandBased
+                ? "Bad beat jackpots often available at this room"
+                : "Look for tournament freerolls and satellite events",
+              "Tip the dealer when you win a significant pot",
+            ],
+          }}
+        />
       </div>
     </ZoneContent>
   );
@@ -338,10 +420,13 @@ function SportsbookZone({
     return (
       <ZoneContent subtitle="Act 2 • Zone 4" title="Sportsbook">
         <div className="bg-slate-800/50 rounded-xl p-8 border border-slate-700 text-center">
-          <TrendingUp className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">No Sportsbook</h3>
-          <p className="text-slate-400">
+          <TrendingUp className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+          <h3 className="text-xl font-medium text-white mb-3">No Sportsbook</h3>
+          <p className="text-slate-400 max-w-md mx-auto">
             {casino.name} focuses on casino gaming and doesn't offer sports betting.
+            {isLandBased
+              ? " Check with local sports betting apps for options in the area."
+              : " Look for dedicated sportsbook sites if sports betting is your focus."}
           </p>
         </div>
       </ZoneContent>
@@ -351,23 +436,81 @@ function SportsbookZone({
   return (
     <ZoneContent subtitle="Act 2 • Zone 4" title="Sportsbook">
       <div className="space-y-6">
-        <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-emerald-400" />
+        {/* Hero section */}
+        <div className="bg-gradient-to-br from-blue-900/40 to-slate-800 rounded-xl p-6 border border-blue-700/30">
+          <div className="flex items-start gap-4">
+            <div className="w-16 h-16 bg-blue-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="w-8 h-8 text-blue-400" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-white">Sportsbook Available</h3>
-              <p className="text-slate-400">Sports betting on-site</p>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                {isLandBased ? "Full Sportsbook" : "Integrated Sportsbook"}
+              </h3>
+              <p className="text-slate-300">
+                {isLandBased
+                  ? `${casino.name}'s sportsbook brings the action of every major sporting event right to the casino floor. Big screens, comfortable seating, and real-time odds.`
+                  : `${casino.name} offers comprehensive sports betting with competitive odds, live betting, and same-game parlays across all major sports.`}
+              </p>
             </div>
           </div>
-
-          <p className="text-slate-300">
-            {isLandBased
-              ? `Place your sports bets at ${casino.name}'s sportsbook. Major sporting events and racing available.`
-              : `${casino.name} offers a full sportsbook with pre-match and live betting options.`}
-          </p>
         </div>
+
+        {/* Sports offered */}
+        <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
+          <h4 className="text-lg font-semibold text-white mb-4">Sports Coverage</h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {["Football", "Basketball", "Baseball", "Hockey", "Soccer", "Tennis", "Golf", "MMA"].map(
+              (sport) => (
+                <div
+                  key={sport}
+                  className="flex items-center gap-2 bg-slate-700/50 px-3 py-2 rounded-lg"
+                >
+                  <Zap className="w-4 h-4 text-blue-400" />
+                  <span className="text-slate-300 text-sm">{sport}</span>
+                </div>
+              )
+            )}
+          </div>
+        </div>
+
+        {/* Betting features */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700">
+            <div className="flex items-center gap-3 mb-3">
+              <Zap className="w-5 h-5 text-amber-400" />
+              <h4 className="text-white font-medium">Live Betting</h4>
+            </div>
+            <p className="text-slate-400 text-sm">
+              Bet on games in progress with real-time odds updates.
+            </p>
+          </div>
+          <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700">
+            <div className="flex items-center gap-3 mb-3">
+              <Users className="w-5 h-5 text-emerald-400" />
+              <h4 className="text-white font-medium">Parlays</h4>
+            </div>
+            <p className="text-slate-400 text-sm">
+              Combine multiple bets for bigger potential payouts.
+            </p>
+          </div>
+        </div>
+
+        {/* Tips for sportsbook */}
+        <PlayerDetailsPanel
+          title="Sports Betting Tips"
+          subtitle="Before you place your bets"
+          variant="compact"
+          details={{
+            tips: [
+              "Compare lines - odds can vary across different books",
+              "Set a bankroll specifically for sports betting",
+              "Don't chase losses with bigger bets",
+              isLandBased
+                ? "Self-service kiosks often have shorter wait times than windows"
+                : "Mobile app may offer exclusive betting promos",
+            ],
+          }}
+        />
       </div>
     </ZoneContent>
   );

@@ -6,6 +6,8 @@ export { default as ActContainer, ZoneContent } from "./ActContainer";
 export { default as ProgressIndicator, FloatingProgress } from "./ProgressIndicator";
 export { default as PlayerDetailsPanel, getGameRulesForCasino, COMMON_HOUSE_EDGES } from "./PlayerDetailsPanel";
 export { default as InterestFilters, FilterTriggerButton, getContentEmphasis } from "./InterestFilters";
+export { default as NarrativeBlock, QuoteBlock, FactGrid, SectionDivider } from "./NarrativeBlock";
+export type { NarrativeContent } from "./NarrativeBlock";
 
 // Act Components
 export { default as FirstImpressionsAct } from "./acts/FirstImpressionsAct";
