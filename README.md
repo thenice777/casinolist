@@ -1,36 +1,185 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CasinoList.io
 
-## Getting Started
+A comprehensive casino directory platform featuring land-based and online casinos worldwide. Built with Next.js 16, TypeScript, Tailwind CSS, and Neon PostgreSQL.
 
-First, run the development server:
+**Live Site**: https://casinolist.io
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS 4
+- **Database**: Neon PostgreSQL (serverless)
+- **Maps**: Mapbox GL JS with Supercluster for clustering
+- **Icons**: Lucide React
+- **Hosting**: Vercel
+
+## Quick Start
 
 ```bash
+# Clone the repository
+git clone https://github.com/[org]/casinolist.git
+cd casinolist
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your credentials
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the site.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env.local` file with:
 
-## Learn More
+```env
+# Neon PostgreSQL connection string
+DATABASE_URL=postgresql://user:password@host/database?sslmode=require
 
-To learn more about Next.js, take a look at the following resources:
+# Mapbox token for interactive map
+NEXT_PUBLIC_MAPBOX_TOKEN=pk.your_mapbox_token
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Site URL for SEO
+NEXT_PUBLIC_SITE_URL=https://casinolist.io
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+src/
+├── app/                          # Next.js App Router pages
+│   ├── api/                      # API routes
+│   │   ├── clicks/               # CTA click tracking
+│   │   ├── contact/              # Contact form
+│   │   ├── newsletter/           # Newsletter signup
+│   │   ├── reviews/              # User reviews
+│   │   └── tour-analytics/       # Story Tour session tracking
+│   ├── casino/[slug]/            # Land-based casino profile
+│   │   └── tour/                 # Story Tour experience
+│   ├── online/[slug]/            # Online casino profile
+│   │   └── tour/                 # Online casino tour
+│   ├── destinations/[slug]/      # Destination pages
+│   ├── explore/                  # Interactive map
+│   ├── compare/                  # Casino comparison
+│   └── ...                       # Other pages
+│
+├── components/
+│   ├── casino/                   # Casino cards, filters, links
+│   ├── compare/                  # Comparison feature
+│   ├── geo/                      # Geo-restriction, helplines
+│   ├── layout/                   # Header, Footer
+│   ├── map/                      # Mapbox components
+│   ├── reviews/                  # Review system
+│   ├── seo/                      # Structured data
+│   ├── story-tour/               # Immersive tour feature
+│   │   ├── acts/                 # 4-act tour structure
+│   │   └── ...                   # Tour components
+│   └── ui/                       # Shared UI components
+│
+├── lib/
+│   ├── casinos.ts                # Casino data queries
+│   ├── db.ts                     # Database connection
+│   ├── geo.ts                    # Geolocation utilities
+│   ├── licenses.ts               # License verification
+│   ├── mapbox-config.ts          # Map configuration
+│   ├── reviews.ts                # Review queries
+│   ├── tour-eligibility.ts       # Tour eligibility logic
+│   ├── tour-narrative.ts         # Dynamic narrative generation
+│   └── utils.ts                  # Shared utilities
+│
+└── types/
+    ├── casino.ts                 # Casino, Review, Destination types
+    └── tour.ts                   # Story Tour types
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Key Features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 1. Casino Directory
+- **Land-based casinos**: 100+ casinos with location, games, amenities
+- **Online casinos**: Licensed operators with bonuses, payment methods
+- **Destinations**: City/region pages with casino listings
+- **Search & Filter**: By games, amenities, ratings, experience tier
+
+### 2. Interactive World Map
+- Mapbox GL JS with custom styling
+- Supercluster for efficient marker clustering
+- Click-through to casino profiles
+
+### 3. Story Tour (Immersive Experience)
+An optional deep-dive for users planning casino visits. See [docs/STORY-TOUR.md](docs/STORY-TOUR.md) for full documentation.
+
+**4-Act Structure:**
+1. First Impressions - Atmosphere, trust signals
+2. Heart of the House - Gaming focus
+3. Full Picture - Amenities, who it's for
+4. Your Move - Verdict, ratings, CTA
+
+**Features:**
+- Responsible gambling gates and reality checks
+- Interest filters (behavior-based personalization)
+- Session analytics tracking
+- Works for both land-based and online casinos
+
+### 4. Responsible Gambling
+- Regional helpline display based on visitor location
+- Geo-restrictions for blocked jurisdictions
+- Reality checks during extended sessions
+- Pre-tour acknowledgment gate
+
+### 5. Affiliate Integration
+- `TrackedLink` component with subid tracking
+- Click tracking API (`/api/clicks`)
+- CTA attribution through tour analytics
+
+## Scripts
+
+```bash
+npm run dev       # Development server (Turbopack)
+npm run build     # Production build
+npm run start     # Production server
+npm run lint      # ESLint check
+```
+
+## Database Schema
+
+The project uses Neon PostgreSQL. Key tables:
+
+- `land_based_casinos` - Physical casino properties
+- `online_casinos` - Online gambling operators
+- `destinations` - City/region groupings
+- `reviews` - User reviews
+- `tour_analytics` - Story Tour session data
+
+See [docs/DATABASE.md](docs/DATABASE.md) for full schema.
+
+## Documentation
+
+- [Architecture Overview](docs/ARCHITECTURE.md)
+- [Story Tour Feature](docs/STORY-TOUR.md)
+- [Database Schema](docs/DATABASE.md)
+- [Components Reference](docs/COMPONENTS.md)
+
+## Deployment
+
+The site is deployed on Vercel with automatic deployments from the `main` branch.
+
+```bash
+# Link to Vercel project
+vercel link
+
+# Deploy preview
+vercel
+
+# Deploy production
+vercel --prod
+```
+
+## License
+
+Proprietary - All rights reserved.
