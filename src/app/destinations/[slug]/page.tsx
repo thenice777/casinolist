@@ -216,7 +216,7 @@ export default async function DestinationPage({ params }: Props) {
                   View All Destinations
                 </Link>
                 <Link
-                  href="/explore"
+                  href="/map"
                   className="block text-emerald-400 hover:text-emerald-300 text-sm"
                 >
                   Explore World Map

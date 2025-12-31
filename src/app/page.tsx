@@ -41,7 +41,7 @@ export default async function Home() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/explore"
+              href="/map"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg bg-emerald-500 text-white font-semibold hover:bg-emerald-600 transition-colors"
             >
               <MapPin className="w-5 h-5" />
@@ -316,7 +316,7 @@ export default async function Home() {
             Vegas, Macau, Monaco - all at your fingertips.
           </p>
           <Link
-            href="/explore"
+            href="/map"
             className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg bg-emerald-500 text-white font-semibold hover:bg-emerald-600 transition-colors"
           >
             <MapPin className="w-5 h-5" />

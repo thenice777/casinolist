@@ -4,7 +4,7 @@ import RegionalHelpline from "@/components/geo/RegionalHelpline";
 
 const footerLinks = {
   explore: [
-    { href: "/explore", label: "World Map" },
+    { href: "/map", label: "World Map" },
     { href: "/land-based-casinos", label: "Land-Based Casinos" },
     { href: "/online-casinos", label: "Online Casinos" },
     { href: "/bonuses", label: "Casino Bonuses" },

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 
 const navItems = [
-  { href: "/explore", label: "Explore Map" },
+  { href: "/map", label: "World Map" },
   { href: "/destinations", label: "Destinations" },
   { href: "/online-casinos", label: "Online Casinos" },
   { href: "/bonuses", label: "Bonuses" },

@@ -15,19 +15,19 @@ export default async function ExplorePage() {
   const onlineCount = markers.filter(m => m.type === "online").length;
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col">
+    <div className="h-screen bg-slate-900 flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="border-b border-slate-700 flex-shrink-0 bg-slate-900/95 backdrop-blur-sm">
+      <header className="border-b border-slate-700 flex-shrink-0 bg-slate-900/95 backdrop-blur-sm z-30">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <Link href="/" className="text-2xl font-bold text-white">
             Casino<span className="text-emerald-400">List</span>.io
           </Link>
           <div className="flex items-center gap-6">
             <Link
-              href="/explore"
+              href="/map"
               className="text-emerald-400 font-medium"
             >
-              Explore Map
+              World Map
             </Link>
             <Link
               href="/online-casinos"
@@ -46,7 +46,7 @@ export default async function ExplorePage() {
       </header>
 
       {/* Map Container */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative min-h-0">
         <MapContainer markers={markers} />
 
         {/* Overlay UI */}
