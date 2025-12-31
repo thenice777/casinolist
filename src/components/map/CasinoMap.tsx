@@ -66,6 +66,13 @@ export default function CasinoMap({
 
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
+  // Debug: log token status
+  useEffect(() => {
+    console.log('[CasinoMap] Token exists:', !!mapboxToken);
+    console.log('[CasinoMap] Token prefix:', mapboxToken?.substring(0, 10));
+    console.log('[CasinoMap] Markers count:', markers.length);
+  }, [mapboxToken, markers.length]);
+
   // Convert markers to GeoJSON points
   const points: PointFeature[] = useMemo(
     () =>
@@ -270,7 +277,11 @@ export default function CasinoMap({
       ref={mapRef}
       {...viewState}
       onMove={(evt) => setViewState(evt.viewState)}
-      onLoad={() => setMapLoaded(true)}
+      onLoad={() => {
+        console.log('[CasinoMap] Map loaded successfully');
+        setMapLoaded(true);
+      }}
+      onError={(e) => console.error('[CasinoMap] Map error:', e)}
       onClick={handleMapClick}
       mapStyle={MAPBOX_STYLES.dark}
       mapboxAccessToken={mapboxToken}
