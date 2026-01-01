@@ -47,7 +47,11 @@ export default function CasinoPopup({ marker, onClose }: CasinoPopupProps) {
       </div>
 
       {/* Casino name */}
-      <h3 className="font-bold text-white text-lg mb-1 pr-6">{marker.name}</h3>
+      <Link href={detailUrl} className="block">
+        <h3 className="font-bold text-white text-lg mb-1 pr-6 hover:text-emerald-400 transition-colors">
+          {marker.name}
+        </h3>
+      </Link>
 
       {/* Location / Jurisdiction */}
       {isOnline ? (

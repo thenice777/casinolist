@@ -147,6 +147,7 @@ export interface OnlineCasino {
   paymentMethods: string[];
   minDeposit?: number;
   minWithdrawal?: number;
+  maxWithdrawal?: number;
   withdrawalTime?: string;
   currencies: string[];
 

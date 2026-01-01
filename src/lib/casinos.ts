@@ -95,14 +95,14 @@ export async function getOnlineCasinoBySlug(slug: string) {
       licenses, license_countries, restricted_countries,
       welcome_bonus_description, welcome_bonus_amount, welcome_bonus_wagering,
       game_providers, games, has_live_casino, has_sportsbook,
-      payment_methods, currencies, min_deposit, max_withdrawal,
-      withdrawal_time, support_channels,
+      payment_methods, currencies, min_deposit, min_withdrawal,
+      withdrawal_time,
       rating_overall, rating_games, rating_service,
       rating_ux as rating_atmosphere, rating_value, rating_trust,
       review_count, experience_tiers, verified_badges,
       logo_url, hero_image_url,
       is_featured, is_verified, last_verified_at,
-      founded_year, headquarters,
+      founded_year, owner_company,
       created_at, updated_at
     FROM online_casinos
     WHERE slug = ${slug} AND is_active = true
