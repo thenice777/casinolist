@@ -87,9 +87,14 @@ export default function CasinoPin({
     ? "bg-amber-500 shadow-amber-500/50"
     : "bg-emerald-500 shadow-emerald-500/50";
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent map click from firing
+    onClick?.();
+  };
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       className={cn(
         "relative flex items-center justify-center rounded-full transition-all duration-200 cursor-pointer",
         sizeClasses[size],

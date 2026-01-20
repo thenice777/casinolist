@@ -30,9 +30,14 @@ export default function ClusterMarker({
     return count.toString();
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent map click from firing
+    onClick?.();
+  };
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       className={cn(
         "flex items-center justify-center rounded-full cursor-pointer",
         "bg-indigo-600 border-2 border-indigo-400",

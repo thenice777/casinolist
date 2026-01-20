@@ -21,12 +21,20 @@ export default function CasinoPopup({ marker, onClose }: CasinoPopupProps) {
     low: "bg-red-500/20 text-red-400",
   };
 
+  const handleClose = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onClose();
+  };
+
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 min-w-[280px] max-w-[320px] shadow-2xl">
+    <div
+      className="bg-slate-800 border border-slate-700 rounded-xl p-4 min-w-[280px] max-w-[320px] shadow-2xl relative"
+      onClick={(e) => e.stopPropagation()}
+    >
       {/* Close button */}
       <button
-        onClick={onClose}
-        className="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"
+        onClick={handleClose}
+        className="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors z-10 p-1 rounded hover:bg-slate-700"
       >
         <X className="w-4 h-4" />
       </button>
