@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Globe, Star, Check, Gift, Shield } from "lucide-react";
 import CompareButton from "@/components/compare/CompareButton";
 import TrackedLink from "@/components/casino/TrackedLink";
@@ -23,10 +24,12 @@ export default function OnlineCasinoCard({ casino }: OnlineCasinoCardProps) {
           {/* Logo Section */}
           <div className="md:w-48 p-6 flex items-center justify-center bg-slate-800/80">
             {casino.logoUrl ? (
-              <img
+              <Image
                 src={casino.logoUrl}
-                alt={casino.name}
-                className="w-24 h-24 object-contain"
+                alt={`${casino.name} logo`}
+                width={96}
+                height={96}
+                className="object-contain"
               />
             ) : (
               <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center">

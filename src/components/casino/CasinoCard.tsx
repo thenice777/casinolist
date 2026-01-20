@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { MapPin, Star, Check, Globe } from "lucide-react";
 import CompareButton from "@/components/compare/CompareButton";
 import { LandBasedCasino, OnlineCasino } from "@/types/casino";
@@ -23,12 +24,14 @@ export default function CasinoCard({ casino, type }: CasinoCardProps) {
 
       <Link href={href}>
         {/* Image */}
-        <div className="h-40 bg-slate-700 relative">
+        <div className="h-40 bg-slate-700 relative overflow-hidden">
           {casino.heroImageUrl ? (
-            <img
+            <Image
               src={casino.heroImageUrl}
-              alt={casino.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              alt={`${casino.name} casino`}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-emerald-900/30 to-slate-800 flex items-center justify-center">

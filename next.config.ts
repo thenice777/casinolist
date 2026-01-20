@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
+  },
   turbopack: {
     resolveAlias: {
       "react-map-gl/mapbox": "react-map-gl/dist/mapbox.js",

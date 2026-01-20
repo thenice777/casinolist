@@ -1,30 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@/lib/db";
+import { checkRateLimit, RATE_LIMITS, rateLimitHeaders } from "@/lib/rate-limit";
+import { newsletterSchema, formatZodError } from "@/lib/validation";
 
 export async function POST(request: NextRequest) {
+  // Rate limiting
+  const rateLimit = checkRateLimit(request, RATE_LIMITS.form);
+  if (!rateLimit.success) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429, headers: rateLimitHeaders(rateLimit) }
+    );
+  }
+
   try {
-    const { email, source = "website" } = await request.json();
+    const body = await request.json();
 
-    // Validate email
-    if (!email || typeof email !== "string") {
+    // Validate with Zod
+    const result = newsletterSchema.safeParse(body);
+    if (!result.success) {
       return NextResponse.json(
-        { error: "Email is required" },
+        { error: formatZodError(result.error) },
         { status: 400 }
       );
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: "Invalid email format" },
-        { status: 400 }
-      );
-    }
+    const { email, source } = result.data;
 
     // Check if email already exists
     const existing = await sql`
       SELECT id, is_active FROM newsletter_subscribers
-      WHERE email = ${email.toLowerCase()}
+      WHERE email = ${email}
     `;
 
     if (existing.length > 0) {
@@ -51,7 +57,7 @@ export async function POST(request: NextRequest) {
     // Insert new subscriber
     await sql`
       INSERT INTO newsletter_subscribers (email, source)
-      VALUES (${email.toLowerCase()}, ${source})
+      VALUES (${email}, ${source})
     `;
 
     return NextResponse.json(

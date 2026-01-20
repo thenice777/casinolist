@@ -1,16 +1,21 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import StructuredData from "@/components/seo/StructuredData";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
 import TrackedLink from "@/components/casino/TrackedLink";
+import StickyMobileCTA from "@/components/casino/StickyMobileCTA";
 import LicenseVerification from "@/components/casino/LicenseVerification";
 import { getOnlineCasinoBySlug } from "@/lib/casinos";
 import { getOnlineCasinoReviews, getReviewStats } from "@/lib/reviews";
 import { checkOnlineTourEligibility } from "@/lib/tour-eligibility";
 import { Globe, Star, Check, Gift, CreditCard, Gamepad2, Play } from "lucide-react";
+
+// Enable ISR with 1 hour revalidation
+export const revalidate = 3600;
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -116,10 +121,13 @@ export default async function OnlineCasinoProfilePage({ params }: Props) {
       {/* Hero */}
       <div className="relative h-64 md:h-72 bg-slate-800">
         {casino.heroImageUrl ? (
-          <img
+          <Image
             src={casino.heroImageUrl}
-            alt={casino.name}
-            className="w-full h-full object-cover opacity-50"
+            alt={`${casino.name} online casino`}
+            fill
+            priority
+            className="object-cover opacity-50"
+            sizes="100vw"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-emerald-900/30 to-slate-900" />
@@ -130,10 +138,12 @@ export default async function OnlineCasinoProfilePage({ params }: Props) {
           <div className="max-w-7xl mx-auto">
             <div className="flex items-start gap-4">
               {casino.logoUrl ? (
-                <img
+                <Image
                   src={casino.logoUrl}
                   alt={`${casino.name} logo`}
-                  className="w-16 h-16 rounded-lg bg-white p-2"
+                  width={64}
+                  height={64}
+                  className="rounded-lg bg-white p-2"
                 />
               ) : (
                 <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center">
@@ -434,6 +444,18 @@ export default async function OnlineCasinoProfilePage({ params }: Props) {
       </main>
 
       <Footer />
+
+      {/* Sticky Mobile CTA */}
+      {(casino.affiliateLink || casino.website) && (
+        <StickyMobileCTA
+          casinoId={casino.id}
+          casinoType="online"
+          affiliateLink={casino.affiliateLink}
+          websiteUrl={casino.website}
+          casinoName={casino.name}
+          bonusText={casino.welcomeBonusDescription}
+        />
+      )}
     </div>
   );
 }

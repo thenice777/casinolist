@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import StructuredData from "@/components/seo/StructuredData";
@@ -9,6 +10,9 @@ import { getLandBasedCasinoBySlug } from "@/lib/casinos";
 import { getLandBasedCasinoReviews, getReviewStats } from "@/lib/reviews";
 import { checkLandBasedTourEligibility } from "@/lib/tour-eligibility";
 import { MapPin, Globe, Phone, Clock, Star, Check, Users, Play } from "lucide-react";
+
+// Enable ISR with 1 hour revalidation
+export const revalidate = 3600;
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -107,10 +111,13 @@ export default async function CasinoProfilePage({ params }: Props) {
       {/* Hero */}
       <div className="relative h-64 md:h-80 bg-slate-800">
         {casino.heroImageUrl ? (
-          <img
+          <Image
             src={casino.heroImageUrl}
-            alt={casino.name}
-            className="w-full h-full object-cover opacity-50"
+            alt={`${casino.name} casino`}
+            fill
+            priority
+            className="object-cover opacity-50"
+            sizes="100vw"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-emerald-900/30 to-slate-900" />
@@ -121,10 +128,12 @@ export default async function CasinoProfilePage({ params }: Props) {
           <div className="max-w-7xl mx-auto">
             <div className="flex items-start gap-4">
               {casino.logoUrl && (
-                <img
+                <Image
                   src={casino.logoUrl}
                   alt={`${casino.name} logo`}
-                  className="w-16 h-16 rounded-lg bg-white p-2"
+                  width={64}
+                  height={64}
+                  className="rounded-lg bg-white p-2"
                 />
               )}
               <div>

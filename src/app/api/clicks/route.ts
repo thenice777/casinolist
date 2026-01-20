@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@/lib/db";
 import crypto from "crypto";
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
+  // Lenient rate limiting - don't block legitimate conversions
+  const rateLimit = checkRateLimit(request, RATE_LIMITS.tracking);
+  if (!rateLimit.success) {
+    // Still return success to not break user flow, just skip tracking
+    return NextResponse.json(
+      { success: true, message: "Rate limited but proceeding" },
+      { status: 200 }
+    );
+  }
+
   try {
     const { casinoId, casinoType, affiliateLink, subid } = await request.json();
 

@@ -62,9 +62,6 @@ export const metadata: Metadata = {
     description:
       "Discover the best online casinos and land-based casinos worldwide. Compare bonuses and read expert reviews.",
   },
-  verification: {
-    google: "your-google-verification-code",
-  },
   category: "gambling",
 };
 
