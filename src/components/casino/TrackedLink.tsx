@@ -10,7 +10,7 @@ interface TrackedLinkProps {
   websiteUrl?: string;
   casinoName: string;
   className?: string;
-  variant?: "primary" | "secondary" | "outline";
+  variant?: "primary" | "secondary" | "outline" | "cta";
   size?: "sm" | "md" | "lg";
   children?: React.ReactNode;
   subid?: string;
@@ -69,6 +69,7 @@ export default function TrackedLink({
     primary: "bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/25 hover:shadow-emerald-500/30",
     secondary: "bg-slate-700 hover:bg-slate-600 text-white",
     outline: "border border-emerald-500 text-emerald-400 hover:bg-emerald-500/10",
+    cta: "bg-white hover:bg-slate-50 text-emerald-700 font-semibold shadow-lg hover:shadow-xl border-2 border-white/20",
   };
 
   const sizeStyles = {

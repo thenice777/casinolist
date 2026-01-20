@@ -330,17 +330,18 @@ export default async function OnlineCasinoProfilePage({ params }: Props) {
 
             {/* CTA */}
             {(casino.affiliateLink || casino.website) && (
-              <div className="bg-emerald-600 rounded-xl p-6">
+              <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-xl p-6 border border-emerald-500/30">
                 <TrackedLink
                   casinoId={casino.id}
                   casinoType="online"
                   affiliateLink={casino.affiliateLink}
                   websiteUrl={casino.website}
                   casinoName={casino.name}
-                  className="w-full bg-white text-emerald-700 hover:bg-emerald-50"
+                  variant="cta"
                   size="lg"
+                  className="w-full"
                 />
-                <p className="text-emerald-100 text-xs text-center mt-3">
+                <p className="text-emerald-200/80 text-xs text-center mt-3">
                   18+ | T&Cs Apply | Gamble Responsibly
                 </p>
               </div>
